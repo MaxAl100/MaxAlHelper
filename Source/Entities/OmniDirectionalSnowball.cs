@@ -19,8 +19,8 @@ public class OmniDirectionalSnowball : Entity
                           float safeZoneSize = 64f, float offset = 0)
     {
         appearAngle = ang;
-        moveDir = Calc.AngleToVector(MathHelper.ToRadians(appearAngle), 1.0f);
         Speed = speed;
+        moveDir = Calc.AngleToVector(MathHelper.ToRadians(appearAngle), Speed);
 
         ResetTime = resetTime;
         DrawOutline = drawOutline;
@@ -56,6 +56,7 @@ public class OmniDirectionalSnowball : Entity
     public override void Added(Scene scene)
     {
         base.Added(scene);
+        Logger.Log(LogLevel.Debug, "MaxAlHelper/OmniDirectionalSnowball", "Trying to add the snowball");
         level = SceneAs<Level>();
         ResetPosition();
     }
@@ -63,7 +64,15 @@ public class OmniDirectionalSnowball : Entity
     private void ResetPosition()
     {
         Player player = level.Tracker.GetEntity<Player>();
-        if (player == null || !CheckIfPlayerOutOfBounds(player))
+        if (player == null)
+        {
+            resetTimer = 0.05f;
+            return;
+        }
+
+        Position = player.Center - moveDir.SafeNormalize() * (SafeZoneSize + 10f);
+
+        if (!CheckIfPlayerOutOfBounds(player))
         {
             resetTimer = 0.05f;
             return;
@@ -77,23 +86,17 @@ public class OmniDirectionalSnowball : Entity
         Sprite.Play("spin", false, false);
 
         Vector2 playerPos = player.Center;
-        Vector2 offsetDir = -moveDir.SafeNormalize(); 
-        Position = playerPos + offsetDir * (SafeZoneSize + 10f); 
+        Vector2 offsetDir = -moveDir.SafeNormalize();
+        Position = playerPos + offsetDir * (SafeZoneSize + 10f);
     }
 
 
 
     private bool CheckIfPlayerOutOfBounds(Player player)
     {
-        if (player is null)
-            return false;
-
-        // Calculate the direction *toward* the player
+        if (player == null) return false;
         Vector2 toPlayer = (player.Center - Position).SafeNormalize();
-        float dot = Vector2.Dot(moveDir, toPlayer);
-
-        // Only spawn if the snowball would move roughly toward the player
-        return dot > 0.5f;
+        return Vector2.Dot(moveDir, toPlayer) > 0.25f;
     }
 
 
@@ -102,7 +105,7 @@ public class OmniDirectionalSnowball : Entity
     {
         Vector2 screenSize = new Vector2(Engine.Width, Engine.Height);
         Vector2 screenCenter = level.Camera.Position + screenSize / 2f;
-        float maxDistance = 500f; 
+        float maxDistance = 500f;
         return Vector2.DistanceSquared(Position, screenCenter) > maxDistance * maxDistance;
     }
 
@@ -135,7 +138,7 @@ public class OmniDirectionalSnowball : Entity
     {
         base.Update();
 
-        Position += moveDir * Speed * Engine.DeltaTime;
+        Position += moveDir * Engine.DeltaTime;
 
 
         if (IsOutOfBounds())

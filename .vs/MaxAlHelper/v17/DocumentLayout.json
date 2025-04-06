@@ -1,0 +1,88 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|c:\\program files (x86)\\steam\\steamapps\\common\\celeste\\mods\\maxalhelper\\source\\maxalhelpermodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|solutionrelative:source\\maxalhelpermodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|c:\\program files (x86)\\steam\\steamapps\\common\\celeste\\mods\\maxalhelper\\source\\entities\\omnidirectionalsnowball.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|solutionrelative:source\\entities\\omnidirectionalsnowball.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|c:\\program files (x86)\\steam\\steamapps\\common\\celeste\\mods\\maxalhelper\\source\\triggers\\omnidirectionalsnowballtrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|solutionrelative:source\\triggers\\omnidirectionalsnowballtrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|c:\\program files (x86)\\steam\\steamapps\\common\\celeste\\mods\\maxalhelper\\source\\triggers\\stopomnidirectionalsnowballtrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{472281A7-9373-412A-8E8E-5B603857A9D6}|Source\\MaxAlHelper.csproj|solutionrelative:source\\triggers\\stopomnidirectionalsnowballtrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MaxAlHelperModule.cs",
+              "DocumentMoniker": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\MaxAlHelperModule.cs",
+              "RelativeDocumentMoniker": "Source\\MaxAlHelperModule.cs",
+              "ToolTip": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\MaxAlHelperModule.cs",
+              "RelativeToolTip": "Source\\MaxAlHelperModule.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAABcAAABFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-06T23:38:15.349Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "StopOmniDirectionalSnowballTrigger.cs",
+              "DocumentMoniker": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\Triggers\\StopOmniDirectionalSnowballTrigger.cs",
+              "RelativeDocumentMoniker": "Source\\Triggers\\StopOmniDirectionalSnowballTrigger.cs",
+              "ToolTip": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\Triggers\\StopOmniDirectionalSnowballTrigger.cs",
+              "RelativeToolTip": "Source\\Triggers\\StopOmniDirectionalSnowballTrigger.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-06T23:21:58.779Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OmniDirectionalSnowballTrigger.cs",
+              "DocumentMoniker": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\Triggers\\OmniDirectionalSnowballTrigger.cs",
+              "RelativeDocumentMoniker": "Source\\Triggers\\OmniDirectionalSnowballTrigger.cs",
+              "ToolTip": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\Triggers\\OmniDirectionalSnowballTrigger.cs",
+              "RelativeToolTip": "Source\\Triggers\\OmniDirectionalSnowballTrigger.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-06T23:21:58.265Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OmniDirectionalSnowball.cs",
+              "DocumentMoniker": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\Entities\\OmniDirectionalSnowball.cs",
+              "RelativeDocumentMoniker": "Source\\Entities\\OmniDirectionalSnowball.cs",
+              "ToolTip": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\Entities\\OmniDirectionalSnowball.cs",
+              "RelativeToolTip": "Source\\Entities\\OmniDirectionalSnowball.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAKwAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-06T23:21:56.736Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
