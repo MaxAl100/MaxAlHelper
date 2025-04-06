@@ -1,0 +1,12 @@
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.placements.name.normal=Omnidirectional Snowball
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.speed=The speed of the snowball.
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.appearAngle=The angle from which the snowball will appear.
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.offset=The vertical offset from the player that this snowball should spawn at (in pixels)
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.resetTime=How long (in seconds) it takes between a snowball disappearing and another one spawning
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.ySineWaveFrequency=The frequency of the sine wave that changes the y position of the snowball
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.spritePath=The path from Sprites.xml to get the snowball's sprites from
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.replaceExisting=Whether this trigger should replace an already existing custom snowball when entered.
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.drawOutline=Whether an outline of the snowball sprite should be drawn
+
+
+triggers.MaxAlHelper/StopOmniDirectionalSnowballTrigger.placements.name.normal=Stop Omnidirectional Snowball
