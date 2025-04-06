@@ -1,7 +1,10 @@
 local omniDirectionalSnowballTrigger = {}
 
+-- remember to match the name with the CustomEntity plugin name
 omniDirectionalSnowballTrigger.name = "MaxAlHelper/OmniDirectionalSnowballTrigger"
 
+-- you don't need an extra layer of braces if you're defining only one placement
+-- this is fine though, no need to edit
 omniDirectionalSnowballTrigger.placements = {
     {
         name = "normal",

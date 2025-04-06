@@ -1,7 +1,6 @@
 - Name: MaxAlHelper
-  DLL: bin/MaxAlHelper.dll
   Version: 0.1.0
+  DLL: bin/MaxAlHelper.dll
   Dependencies:
-    - Name: Everest
     - Name: EverestCore
       Version: 1.5421.0
