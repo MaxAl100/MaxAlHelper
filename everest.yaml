@@ -1,5 +1,5 @@
 - Name: MaxAlHelper
-  DLL: Code/MaxAlHelper/bin/MaxAlHelper.dll
+  DLL: bin/MaxAlHelper.dll
   Version: 0.1.0
   Dependencies:
     - Name: Everest

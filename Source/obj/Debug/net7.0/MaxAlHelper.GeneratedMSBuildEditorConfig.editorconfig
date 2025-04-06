@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Celeste.Mod.MaxAlHelper
-build_property.ProjectDir = C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\MaxAlHelperCode\Source\
+build_property.ProjectDir = C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\MaxAlHelper\Source\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

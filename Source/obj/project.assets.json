@@ -4231,11 +4231,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelperCode\\Source\\MaxAlHelper.csproj",
+      "projectUniqueName": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\MaxAlHelper.csproj",
       "projectName": "MaxAlHelper",
-      "projectPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelperCode\\Source\\MaxAlHelper.csproj",
+      "projectPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\MaxAlHelper.csproj",
       "packagesPath": "C:\\Users\\Alejandro HH\\.nuget\\packages\\",
-      "outputPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelperCode\\Source\\obj\\",
+      "outputPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PG4ljLC4Lt3pZEbr43GvOJgjMNfkjhvFYV6AdMnGItSXMAW9FVeNSaHDidyWpnkFJhLBAm9Z0M1ZT7Spfv8o9g==",
+  "dgSpecHash": "HugtbPMWKSQP+Bvoi4oB/12JLezODWDW+c/dH9bNBUE0KXbxAdowtNs8ZriOGEAlRYBlkrQ/v9h7ykjTEGP5xA==",
   "success": true,
-  "projectFilePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelperCode\\Source\\MaxAlHelper.csproj",
+  "projectFilePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Celeste\\Mods\\MaxAlHelper\\Source\\MaxAlHelper.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Alejandro HH\\.nuget\\packages\\asmresolver\\6.0.0-beta.1\\asmresolver.6.0.0-beta.1.nupkg.sha512",
     "C:\\Users\\Alejandro HH\\.nuget\\packages\\asmresolver.dotnet\\6.0.0-beta.1\\asmresolver.dotnet.6.0.0-beta.1.nupkg.sha512",
