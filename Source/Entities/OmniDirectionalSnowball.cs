@@ -98,14 +98,14 @@ public class OmniDirectionalSnowball : Entity
             return;
         }
 
-        // hint: this is useless, as a couple lines down Position is overwritten
-        Position = player.Center - moveDir.SafeNormalize() * (SafeZoneSize + 10f);
+        //// hint: this is useless, as a couple lines down Position is overwritten
+        //Position = player.Center - moveDir.SafeNormalize() * (SafeZoneSize + 10f);
 
-        if (!CheckIfPlayerOutOfBounds(player))
-        {
-            resetTimer = 0.05f;
-            return;
-        }
+        //if (!CheckIfPlayerOutOfBounds(player))
+        //{
+        //    resetTimer = 0.05f;
+        //    return;
+        //}
 
         // hint: you can use the game's SFX class for the game's sound effects and stuff,
         // using strings directly is fine as well, but prone to typos
@@ -118,7 +118,7 @@ public class OmniDirectionalSnowball : Entity
         Sprite.Play("spin");
 
         Vector2 playerPos = player.Center;
-        Vector2 offsetDir = -moveDir.SafeNormalize();
+        Vector2 offsetDir = moveDir.SafeNormalize();
         Position = playerPos + offsetDir * (SafeZoneSize + 10f);
     }
 
@@ -127,12 +127,12 @@ public class OmniDirectionalSnowball : Entity
         if (player is null)
             return false;
 
-        // Calculate the direction *toward* the player
-        Vector2 toPlayer = (player.Center - Position).SafeNormalize();
-        float dot = Vector2.Dot(moveDir, toPlayer);
+        //// Calculate the direction *toward* the player
+        //Vector2 toPlayer = (player.Center - Position).SafeNormalize();
+        //float dot = Vector2.Dot(moveDir, toPlayer);
 
-        // Only spawn if the snowball would move roughly toward the player
-        return dot > 0.25f;
+        // If the player exists, target him
+        return true;
     }
 
     private bool IsOutOfBounds()
@@ -178,7 +178,7 @@ public class OmniDirectionalSnowball : Entity
     {
         base.Update();
 
-        Position += moveDir * Speed * Engine.DeltaTime;
+        Position += -moveDir * Speed * Engine.DeltaTime;
 
         // hint: invert the condition and return early, since there's nothing more to do
         if (!IsOutOfBounds())
