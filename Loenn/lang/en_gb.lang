@@ -8,5 +8,7 @@ triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.sprit
 triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.replaceExisting=Whether this trigger should replace an already existing custom snowball when entered
 triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.drawOutline=Whether an outline of the snowball sprite should be drawn
 triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.safeZoneSize=Distance, in pixels, from where the first snowball appears
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.repetitionsForTurn=How many snowballs need to be thrown to turn TurnAngle degrees. If set to 0, the snowball won't change it's angle
+triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.turnAngle=How many degrees the snowball origin turns every repetitionsForTurn times
 
 triggers.MaxAlHelper/StopOmniDirectionalSnowballTrigger.placements.name.normal=Stop Omnidirectional Snowball

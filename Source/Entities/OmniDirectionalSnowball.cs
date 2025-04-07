@@ -16,10 +16,13 @@ public class OmniDirectionalSnowball : Entity
     public float appearAngle;
     public float SafeZoneSize;
     public float Offset;
+    public int RepetitionsForTurn;
+    public float TurnAngle;
     private Vector2 moveDir;
 
     public Sprite Sprite;
     private float resetTimer;
+    private int currentRepetitions;
     private Level level;
     public SineWave Sine;
     private SoundSource spawnSfx;
@@ -38,14 +41,17 @@ public class OmniDirectionalSnowball : Entity
         float sineWaveFrequency = 0.5f,
         bool drawOutline = true,
         float ang = 0f,
-        float safeZoneSize = 64f,
-        float offset = 0)
+        float safeZoneSize = 300f,
+        float offset = 0,
+        int repetitionsForTurn = 0,
+        float turnAngle = 0)
     {
         appearAngle = ang;
         moveDir = Calc.AngleToVector(appearAngle.ToRad(), 1.0f);
         Speed = speed;
 
         ResetTime = resetTime;
+        currentRepetitions = 0;
         DrawOutline = drawOutline;
 
         // hint: use the constants in the Depths class, then subtract/add based on whether
@@ -68,6 +74,8 @@ public class OmniDirectionalSnowball : Entity
         Add(spawnSfx = new SoundSource());
         SafeZoneSize = safeZoneSize;
         Offset = offset;
+        RepetitionsForTurn = repetitionsForTurn;
+        TurnAngle = turnAngle;
     }
 
     public void StartLeaving()
@@ -84,13 +92,27 @@ public class OmniDirectionalSnowball : Entity
     public override void Added(Scene scene)
     {
         base.Added(scene);
-        Logger.Debug("MaxAlHelper/OmniDirectionalSnowball", "Trying to add the snowball");
         level = SceneAs<Level>();
         ResetPosition();
     }
 
+    private void UpdateAngle()
+    {
+        appearAngle += TurnAngle%360;
+        moveDir = Calc.AngleToVector(appearAngle.ToRad(), 1.0f);
+    }
+
     private void ResetPosition()
     {
+        if (RepetitionsForTurn > 0)
+        {
+            if (currentRepetitions == RepetitionsForTurn)
+            {
+                currentRepetitions = 0;
+                UpdateAngle();
+            }
+            currentRepetitions += 1;
+        }
         Player player = level.Tracker.GetEntity<Player>();
         if (player is null)
         {
@@ -98,14 +120,6 @@ public class OmniDirectionalSnowball : Entity
             return;
         }
 
-        //// hint: this is useless, as a couple lines down Position is overwritten
-        //Position = player.Center - moveDir.SafeNormalize() * (SafeZoneSize + 10f);
-
-        //if (!CheckIfPlayerOutOfBounds(player))
-        //{
-        //    resetTimer = 0.05f;
-        //    return;
-        //}
 
         // hint: you can use the game's SFX class for the game's sound effects and stuff,
         // using strings directly is fine as well, but prone to typos
@@ -122,18 +136,6 @@ public class OmniDirectionalSnowball : Entity
         Position = playerPos + offsetDir * (SafeZoneSize + 10f);
     }
 
-    private bool CheckIfPlayerOutOfBounds(Player player)
-    {
-        if (player is null)
-            return false;
-
-        //// Calculate the direction *toward* the player
-        //Vector2 toPlayer = (player.Center - Position).SafeNormalize();
-        //float dot = Vector2.Dot(moveDir, toPlayer);
-
-        // If the player exists, target him
-        return true;
-    }
 
     private bool IsOutOfBounds()
     {

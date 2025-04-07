@@ -17,7 +17,9 @@ omniDirectionalSnowballTrigger.placements = {
             safeZoneSize = 64.0,
             offset = 0.0,
             drawOutline = true,
-            replaceExisting = true
+            replaceExisting = true,
+            repetitionsForTurn = 0,
+            turnAngle = 0.0
         }
     }
 }

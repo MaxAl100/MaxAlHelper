@@ -16,6 +16,8 @@ public class OmniDirectionalSnowballTrigger : Trigger
     public bool ReplaceExisting;
     public float SafeZoneSize;
     public float Offset;
+    public int RepetitionsForTurn;
+    public float TurnAngle;
 
     public OmniDirectionalSnowballTrigger(EntityData data, Vector2 offset) : base(data, offset)
     {
@@ -26,8 +28,10 @@ public class OmniDirectionalSnowballTrigger : Trigger
         DrawOutline = data.Bool("drawOutline", true);
         AppearAngle = data.Float("appearAngle");
         ReplaceExisting = data.Bool("replaceExisting", true);
-        SafeZoneSize = data.Float("safeZoneSize", 64f);
+        SafeZoneSize = data.Float("safeZoneSize", 300f);
         Offset = data.Float("offset");
+        RepetitionsForTurn = data.Int("repetitionsForTurn", 0);
+        TurnAngle = data.Float("turnAngle", 0.0f);
     }
 
     public override void OnEnter(Player player)
@@ -55,7 +59,7 @@ public class OmniDirectionalSnowballTrigger : Trigger
         else
         {
             Scene.Add(new OmniDirectionalSnowball(
-                SpritePath, Speed, ResetTime, SineWaveFrequency, DrawOutline, AppearAngle, SafeZoneSize, Offset));
+                SpritePath, Speed, ResetTime, SineWaveFrequency, DrawOutline, AppearAngle, SafeZoneSize, Offset, RepetitionsForTurn, TurnAngle));
         }
         RemoveSelf();
     }
