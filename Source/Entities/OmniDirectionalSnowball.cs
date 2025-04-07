@@ -27,7 +27,7 @@ public class OmniDirectionalSnowball : Entity
 
     private bool leaving;
 
-    // tip: calculate the camera center offset once and store it for later
+    // hint: calculate the camera center offset once and store it for later
     // plus, you were using the wrong fields - you meant GameWidth/GameHeight constants
     private static readonly Vector2 CameraCenterOffset = new Vector2(Celeste.GameWidth, Celeste.GameHeight) / 2;
 
@@ -84,6 +84,7 @@ public class OmniDirectionalSnowball : Entity
     public override void Added(Scene scene)
     {
         base.Added(scene);
+        Logger.Debug("MaxAlHelper/OmniDirectionalSnowball", "Trying to add the snowball");
         level = SceneAs<Level>();
         ResetPosition();
     }
@@ -91,7 +92,16 @@ public class OmniDirectionalSnowball : Entity
     private void ResetPosition()
     {
         Player player = level.Tracker.GetEntity<Player>();
-        if (player is null || !CheckIfPlayerOutOfBounds(player))
+        if (player is null)
+        {
+            resetTimer = 0.05f;
+            return;
+        }
+
+        // hint: this is useless, as a couple lines down Position is overwritten
+        Position = player.Center - moveDir.SafeNormalize() * (SafeZoneSize + 10f);
+
+        if (!CheckIfPlayerOutOfBounds(player))
         {
             resetTimer = 0.05f;
             return;
@@ -122,12 +132,12 @@ public class OmniDirectionalSnowball : Entity
         float dot = Vector2.Dot(moveDir, toPlayer);
 
         // Only spawn if the snowball would move roughly toward the player
-        return dot > 0.5f;
+        return dot > 0.25f;
     }
 
     private bool IsOutOfBounds()
     {
-        // tip: make this a constant to optimize it a bit
+        // hint: make this a constant to optimize it a bit
         // delete the const keyword if you want to turn it into a variable again
         const float maxDistance = 500f;
         Vector2 screenCenter = level.Camera.Position + CameraCenterOffset;
