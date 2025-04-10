@@ -15,7 +15,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         public float TimeBetweenDuplications { get; set; } = 1f;
         public float DuplicationTimer { get; set; } = 5f;
         public int CurrentGeneration { get; set; } = 0;
-        public string[] SpritePaths { get; set; } = { "theo_crystal" };
+        public string[] SpritePaths { get; set; } = {  };
         public Sprite Sprite;
 
         // Constructor for loading from EntityData (used by maps)
@@ -29,7 +29,13 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             TimeBetweenDuplications = data.Float("timeBetweenDuplications", 1f);
             DuplicationTimer = TimeBetweenDuplications;
             CurrentGeneration = data.Int("currentGeneration", 0);
-            SpritePaths = data.Attr("spritePaths", "theo_crystal").Split(',');
+            SpritePaths = data.Attr("spritePaths").Split(',');
+
+            Sprite baseSprite = Get<Sprite>();
+            if (baseSprite != null)
+            {
+                baseSprite.RemoveSelf();
+            }
 
             CreateSprite();
         }
@@ -51,15 +57,13 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             MaxGenerations = maxGenerations;
             TimeBetweenDuplications = timeBetweenDuplications;
             DuplicationTimer = timeBetweenDuplications;
-            SpritePaths = spritePaths ?? new string[] { "theo_crystal" };
-            //CreateSprite();
+            SpritePaths = spritePaths ?? new string[] {  };
         }
 
         private void CreateSprite()
         {
             if (SpritePaths.Length > 0)
             {
-                // Create the first sprite for the initial TheoCrystal
                 Sprite?.RemoveSelf();
                 Sprite = GFX.SpriteBank.Create(SpritePaths[CurrentGeneration % SpritePaths.Length]);
                 Add(Sprite);
@@ -89,6 +93,12 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             );
             clone.CurrentGeneration = CurrentGeneration + 1;
             CurrentGeneration += 1;
+
+            Sprite baseSprite = clone.Get<Sprite>();
+            if (baseSprite != null)
+            {
+                baseSprite.RemoveSelf();
+            }
             clone.CreateSprite();
 
             if (!CanClonesDuplicate)
