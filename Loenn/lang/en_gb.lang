@@ -12,3 +12,9 @@ triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.repet
 triggers.MaxAlHelper/OmniDirectionalSnowballTrigger.attributes.description.turnAngle=How many degrees the snowball origin turns every repetitionsForTurn times
 
 triggers.MaxAlHelper/StopOmniDirectionalSnowballTrigger.placements.name.normal=Stop Omnidirectional Snowball
+
+
+
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.placements.name.normal=Duplicating Theo Crystal Zone
+
+entities.MaxAlHelper/DuplicatingTheoCrystal.placements.name.normal=Duplicating Theo Crystal

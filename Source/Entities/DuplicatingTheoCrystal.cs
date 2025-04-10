@@ -1,74 +1,112 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Monocle;
+using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.MaxAlHelper.Entities
 {
     [Tracked]
+    [CustomEntity("MaxAlHelper/DuplicatingTheoCrystal")]
     public class DuplicatingTheoCrystal : TheoCrystal
     {
-        // Extra attributes for duplication
-        public bool CanDuplicateMultipleTimes { get; set; }
-        public bool HasDuplicated { get; private set; }
-        public bool CanCloneDuplicate { get; set; }
-        public int MaxGenerations { get; set; }
-        public int CurrentGeneration { get; private set; }
-        public float TimeBetweenDuplications { get; set; }
-        private float duplicationTimer;
-        public Sprite[] GenerationSprites { get; set; }
+        public bool CanDuplicateMultipleTimes { get; set; } = false;
+        public bool HasDuplicated { get; set; } = false;
+        public bool CanClonesDuplicate { get; set; } = false;
+        public int MaxGenerations { get; set; } = 1;
+        public float TimeBetweenDuplications { get; set; } = 1f;
+        public float DuplicationTimer { get; set; } = 0f;
+        public int CurrentGeneration { get; set; } = 0;
+        public string[] SpritePaths { get; set; } = { "theo_crystal" };
+        public Sprite Sprite;
 
-        public DuplicatingTheoCrystal(Vector2 position) : base(position)
+        // Constructor for loading from EntityData (used by maps)
+        public DuplicatingTheoCrystal(EntityData data, Vector2 offset)
+            : base(data.Position + offset)
         {
-            // Set defaults for the new attributes
-            CanDuplicateMultipleTimes = true;
-            HasDuplicated = false;
-            CanCloneDuplicate = true;
-            MaxGenerations = 3; // Example max generations
-            TimeBetweenDuplications = 5f; // Time between duplications in seconds
-            CurrentGeneration = 1;
-            duplicationTimer = TimeBetweenDuplications;
+            CanDuplicateMultipleTimes = data.Bool("canDuplicateMultipleTimes", false);
+            HasDuplicated = data.Bool("hasDuplicated", false);
+            CanClonesDuplicate = data.Bool("canClonesDuplicate", false);
+            MaxGenerations = data.Int("maxGenerations", 1);
+            TimeBetweenDuplications = data.Float("timeBetweenDuplications", 1f);
+            CurrentGeneration = data.Int("currentGeneration", 0);
+            SpritePaths = data.Attr("spritePaths", "theo_crystal").Split(',');
+
+            CreateSprite();
         }
 
-        public override void Added(Scene scene)
+        // Runtime duplication constructor
+        public DuplicatingTheoCrystal(
+            bool canDuplicateMultipleTimes = false,
+            bool hasDuplicated = false,
+            bool canClonesDuplicate = false,
+            int maxGenerations = 1,
+            float timeBetweenDuplications = 1f,
+            string[] spritePaths = null,
+            Vector2? position = null
+        ) : base(position ?? Vector2.Zero)
         {
-            base.Added(scene);
-            ResetDuplicationTimer();
+            CanDuplicateMultipleTimes = canDuplicateMultipleTimes;
+            HasDuplicated = hasDuplicated;
+            CanClonesDuplicate = canClonesDuplicate;
+            MaxGenerations = maxGenerations;
+            TimeBetweenDuplications = timeBetweenDuplications;
+            SpritePaths = spritePaths ?? new string[] { "theo_crystal" };
+
+            CreateSprite();
+        }
+
+        private void CreateSprite()
+        {
+            if (SpritePaths.Length > 0)
+            {
+                // Create the first sprite for the initial TheoCrystal
+                Sprite?.RemoveSelf();
+                Sprite = GFX.SpriteBank.Create(SpritePaths[CurrentGeneration % SpritePaths.Length]);
+                Add(Sprite);
+            }
         }
 
         public override void Update()
         {
+            if (DuplicationTimer > 0)
+            {
+                DuplicationTimer -= Engine.DeltaTime;
+            }
             base.Update();
-
-            // Manage duplication timer
-            if (HasDuplicated || duplicationTimer <= 0)
-                return;
-
-            duplicationTimer -= Engine.DeltaTime;
-
-            if (duplicationTimer <= 0)
-            {
-                TryDuplicate();
-            }
         }
 
-        private void TryDuplicate()
+        public void DuplicateTheoCrystal()
         {
-            // Check if duplication is possible based on current generation and clone properties
-            if (CanDuplicateMultipleTimes && CurrentGeneration <= MaxGenerations)
+            DuplicationTimer = TimeBetweenDuplications;
+            DuplicatingTheoCrystal clone = new DuplicatingTheoCrystal(
+                canDuplicateMultipleTimes: CanDuplicateMultipleTimes,
+                hasDuplicated: false,
+                canClonesDuplicate: CanClonesDuplicate,
+                maxGenerations: MaxGenerations,
+                timeBetweenDuplications: TimeBetweenDuplications,
+                spritePaths: SpritePaths,
+                position: Position 
+            );
+            clone.CurrentGeneration = CurrentGeneration + 1;
+            CurrentGeneration += 1;
+            clone.CreateSprite();
+
+            if (!CanClonesDuplicate)
             {
-                // Logic to create a duplicate TheoCrystal
-                DuplicatingTheoCrystal clone = new DuplicatingTheoCrystal(Position + new Vector2(20, 20)); // Adjust position
-                clone.CurrentGeneration = CurrentGeneration + 1;
-                clone.Sprite = GenerationSprites[CurrentGeneration % GenerationSprites.Length];
-                // Add clone to the scene and initialize stats
-                Scene.Add(clone);
+                clone.CanDuplicateMultipleTimes = false;
                 HasDuplicated = true;
-                duplicationTimer = TimeBetweenDuplications;
             }
+
+            Scene.Add(clone); 
+
+            HasDuplicated = true;
         }
 
-        private void ResetDuplicationTimer()
+        public bool CanDuplicate()
         {
-            duplicationTimer = TimeBetweenDuplications;
+            if (DuplicationTimer > 0) return false;
+            else if (CurrentGeneration >= MaxGenerations) return false;
+            else if (HasDuplicated && !CanDuplicateMultipleTimes) return false;
+            else return true;
         }
     }
 }
