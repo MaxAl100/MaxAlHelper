@@ -14,7 +14,6 @@ duplicatingTheoCrystal.placements = {
             maxGenerations = 1,
             timeBetweenDuplications = 1.0,
             spritePaths = "theo_crystal", -- comma-separated list of sprites
-            currentGeneration = 1
         }
     }
 }

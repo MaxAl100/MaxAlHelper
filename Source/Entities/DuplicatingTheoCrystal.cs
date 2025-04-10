@@ -13,7 +13,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         public bool CanClonesDuplicate { get; set; } = false;
         public int MaxGenerations { get; set; } = 1;
         public float TimeBetweenDuplications { get; set; } = 1f;
-        public float DuplicationTimer { get; set; } = 0f;
+        public float DuplicationTimer { get; set; } = 5f;
         public int CurrentGeneration { get; set; } = 0;
         public string[] SpritePaths { get; set; } = { "theo_crystal" };
         public Sprite Sprite;
@@ -27,6 +27,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             CanClonesDuplicate = data.Bool("canClonesDuplicate", false);
             MaxGenerations = data.Int("maxGenerations", 1);
             TimeBetweenDuplications = data.Float("timeBetweenDuplications", 1f);
+            DuplicationTimer = TimeBetweenDuplications;
             CurrentGeneration = data.Int("currentGeneration", 0);
             SpritePaths = data.Attr("spritePaths", "theo_crystal").Split(',');
 
@@ -49,9 +50,9 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             CanClonesDuplicate = canClonesDuplicate;
             MaxGenerations = maxGenerations;
             TimeBetweenDuplications = timeBetweenDuplications;
+            DuplicationTimer = timeBetweenDuplications;
             SpritePaths = spritePaths ?? new string[] { "theo_crystal" };
-
-            CreateSprite();
+            //CreateSprite();
         }
 
         private void CreateSprite()
