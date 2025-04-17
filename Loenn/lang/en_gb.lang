@@ -27,3 +27,5 @@ entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetAbsorbPo
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetAbsorbPositionY=Relative Y position for the target will be teleported from
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.animationSpeedMultiplier=How fast or slow the animation will happen compared to a base speed
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.walkBelowTeleport=Check if the player character should go below the teleport before teleporting or just walk around near this entity.
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetRoomTransitionX=Relative X position from below the player where the room transition animation happens
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetRoomTransitionY=Relative Y position from below the player where the room transition animation happens

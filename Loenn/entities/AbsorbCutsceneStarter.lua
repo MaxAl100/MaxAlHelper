@@ -10,10 +10,12 @@ absorbCutsceneStarter.placements = {
             targetRoom = "Fill",
             walkAroundDistance = 12,
             introType = "WalkInRight",
-            targetAbsorbPositionX = 200,
-            targetAbsorbPositionY = 100,
+            targetAbsorbPositionX = 0,
+            targetAbsorbPositionY = 0,
             animationSpeedMultiplier = 1,
             walkBelowTeleport = true,
+            targetRoomTransitionX = 0,
+            targetRoomTransitionY = 0,
         }
     }
 }

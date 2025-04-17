@@ -78,7 +78,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             }
             yield return 0.1f;
             player.ForceStrongWindHair.X = 0f;
-            SpotlightWipe.FocusPoint = player.Position - (base.Scene as Level).Camera.Position + new Vector2(-8f, -48f);
+            SpotlightWipe.FocusPoint = player.Position - offset + starter.targetRoomTransition;
             SpotlightWipe spotWipe = new SpotlightWipe(base.Scene, wipeIn: false, delegate
             {
                 Thread.Sleep(100);

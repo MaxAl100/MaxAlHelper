@@ -17,6 +17,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         public Vector2 targetAbsorbPosition;
         public float animationSpeedMult;
         public bool walkBelowTeleport;
+        public Vector2 targetRoomTransition;
 
         public AbsorbCutsceneStarter(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -31,6 +32,10 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 data.Float("targetAbsorbPositionX", 0f),
                 data.Float("targetAbsorbPositionY", 0f)
             );
+            this.targetRoomTransition = new Vector2(
+                data.Float("targetRoomTransitionX", 0f),
+                data.Float("targetRoomTransitionY", 0f)
+                );
             this.animationSpeedMult = data.Float("animationSpeedMult", 1f);
             this.walkBelowTeleport = data.Bool("walkBelowTeleport", true);
 
