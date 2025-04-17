@@ -1,1 +1,4 @@
 # Thank snip for general help
+MaxAlHelper_MaxAl_showcase= MaxAl Helper showcase
+MaxAlHelper_MaxAl= MaxAl Helper
+# Don't forget to add descriptions to all the stuff I make in en_gb.lang

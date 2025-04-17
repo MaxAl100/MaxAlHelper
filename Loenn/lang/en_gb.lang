@@ -18,3 +18,12 @@ triggers.MaxAlHelper/StopOmniDirectionalSnowballTrigger.placements.name.normal=S
 entities.MaxAlHelper/DuplicatingTheoCrystalZone.placements.name.normal=Duplicating Theo Crystal Zone
 
 entities.MaxAlHelper/DuplicatingTheoCrystal.placements.name.normal=Duplicating Theo Crystal
+
+entities.MaxAlHelper/AbsorbCutsceneStarter.placements.name.normal=Absorb Cutscene Starter
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetRoom=Name of the room the player will end up being teleported to
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.walkAroundDiscance=Distance left and right that the player character will walk before being teleported
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.introType=Intro Type that will happen after being teleported
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetAbsorbPositionX=Relative X position for the target will be teleported from
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetAbsorbPositionY=Relative Y position for the target will be teleported from
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.animationSpeedMultiplier=How fast or slow the animation will happen compared to a base speed
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.walkBelowTeleport=Check if the player character should go below the teleport before teleporting or just walk around near this entity.
