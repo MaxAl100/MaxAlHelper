@@ -16,6 +16,7 @@ absorbCutsceneStarter.placements = {
             walkBelowTeleport = true,
             targetRoomTransitionX = 0,
             targetRoomTransitionY = 0,
+            zoomIn = true,
         }
     }
 }

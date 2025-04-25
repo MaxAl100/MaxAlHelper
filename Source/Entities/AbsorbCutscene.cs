@@ -51,7 +51,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             player.Facing = Facings.Left;
             player.DummyAutoAnimate = true;
             Vector2 offset = (Engine.Scene as Level).LevelOffset;
-            Add(new Coroutine(level.ZoomTo(new Vector2(starter.Position.X + starter.targetAbsorbPosition.X - offset.X, starter.Position.Y + starter.targetAbsorbPosition.Y - offset.Y), 2.3f, 10f)));
+            if (starter.zoomIn) Add(new Coroutine(level.ZoomTo(new Vector2(starter.Position.X + starter.targetAbsorbPosition.X - offset.X, starter.Position.Y + starter.targetAbsorbPosition.Y - offset.Y), 2.3f, 10f)));
             yield return 0.25f;
             player.ForceStrongWindHair.X = -1f;
             yield return player.DummyWalkToExact((int)player.X + 12);

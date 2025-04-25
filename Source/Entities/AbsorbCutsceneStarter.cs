@@ -18,6 +18,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         public float animationSpeedMult;
         public bool walkBelowTeleport;
         public Vector2 targetRoomTransition;
+        public bool zoomIn;
 
         public AbsorbCutsceneStarter(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -38,6 +39,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 );
             this.animationSpeedMult = data.Float("animationSpeedMult", 1f);
             this.walkBelowTeleport = data.Bool("walkBelowTeleport", true);
+            this.zoomIn = data.Bool("zoomIn", true);
 
             Add(talk = new TalkComponent(
                 new Rectangle(-24, -8, 48, 40),
