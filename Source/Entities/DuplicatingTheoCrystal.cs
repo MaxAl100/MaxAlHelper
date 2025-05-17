@@ -191,10 +191,6 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
         public bool CanDuplicate()
         {
-            // Clones can't duplicate if CanClonesDuplicate is false
-            if (!CanClonesDuplicate && CurrentGeneration > 0)
-                return false;
-
             // Can't duplicate if timer is running
             if (DuplicationTimer > 0)
                 return false;
