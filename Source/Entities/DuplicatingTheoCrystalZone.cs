@@ -13,8 +13,8 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         private float flash;
         private bool flashing;
 
-        // Track crystals that have been processed to prevent duplicate processing
-        private HashSet<DuplicatingTheoCrystal> processedCrystals = new HashSet<DuplicatingTheoCrystal>();
+        private int triggerCount = 0;
+        private int maxTriggers = 0;
 
         // Theo crystal creation settings
         private bool canDuplicateMultipleTimes;
@@ -29,18 +29,24 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         private bool bounceBack;
         private bool removeOriginal;
 
+        // Duplication cooldown to prevent multiple duplications in one frame
+        private float duplicationCooldown = 0f;
+        private const float MinDuplicationCooldown = 0.1f;
+
         public DuplicatingTheoCrystalZone(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
             Collider = new Hitbox(data.Width, data.Height);
-            AddTag(Tags.TransitionUpdate); // Ensures entity updates during transitions
-            Depth = Depths.FakeWalls; // Makes it render in the right order
+            AddTag(Tags.TransitionUpdate);
+            Depth = Depths.FakeWalls;
 
             // Theo crystal settings
             canDuplicateMultipleTimes = data.Bool("canDuplicateMultipleTimes", false);
             canClonesDuplicate = data.Bool("canClonesDuplicate", false);
             maxGenerations = data.Int("maxGenerations", 1);
             timeBetweenDuplications = data.Float("timeBetweenDuplications", 1f);
+            maxTriggers = data.Int("maxTriggers", 0); // 0 means infinite
+            triggerCount = 0;
 
             // Parse sprite paths
             string spritesString = data.Attr("spritePaths", "");
@@ -67,6 +73,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         {
             base.Update();
 
+            // Update flashing effect
             if (flashing)
             {
                 flash = Calc.Approach(flash, 0f, Engine.DeltaTime * 2f);
@@ -76,36 +83,63 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 }
             }
 
-            // Make collisions work with theo crystals
-            Collidable = true;
-            List<Entity> colliding = CollideAll<DuplicatingTheoCrystal>();
-            foreach (Entity e in colliding)
+            // Update duplication cooldown
+            if (duplicationCooldown > 0)
             {
-                if (e is DuplicatingTheoCrystal theo && !processedCrystals.Contains(theo))
-                {
-                    // Only process theo crystals that can be duplicated
-                    if (theo.CanDuplicate())
-                    {
-                        DuplicateTheoCrystal(theo);
+                duplicationCooldown -= Engine.DeltaTime;
+                return; // Skip duplication logic during cooldown
+            }
 
-                        // Mark this crystal as processed to prevent duplicate processing
-                        // Only add to processed list if we're not allowing multiple duplications
-                        if (!canDuplicateMultipleTimes)
-                        {
-                            processedCrystals.Add(theo);
-                        }
+            // Check if we've reached maximum triggers
+            if (maxTriggers > 0 && triggerCount >= maxTriggers)
+            {
+                RemoveSelf();
+                return;
+            }
+
+            // Look for theo crystals to duplicate
+            Collidable = true;
+            
+            // Store crystals to duplicate - don't modify during enumeration
+            List<DuplicatingTheoCrystal> crystalsToDuplicate = new List<DuplicatingTheoCrystal>();
+            
+            foreach (Entity e in Scene.Tracker.GetEntities<DuplicatingTheoCrystal>())
+            {
+                if (e is DuplicatingTheoCrystal theo && Collide.Check(this, theo))
+                {
+                    // Check if this crystal can be duplicated by the zone
+                    if (theo.CanDuplicate() && (canDuplicateMultipleTimes || !theo.HasDuplicated))
+                    {
+                        crystalsToDuplicate.Add(theo);
                     }
                 }
             }
+            
+            // Only duplicate one crystal per frame to prevent issues
+            if (crystalsToDuplicate.Count > 0)
+            {
+                DuplicateTheoCrystal(crystalsToDuplicate[0]);
+                
+                // Set a cooldown to prevent duplicating too many crystals at once
+                duplicationCooldown = MinDuplicationCooldown;
+                
+                // Increment trigger count
+                triggerCount++;
+                
+                // Check if we should remove ourselves after this duplication
+                if (maxTriggers > 0 && triggerCount >= maxTriggers)
+                {
+                    RemoveSelf();
+                    return;
+                }
+            }
+
             Collidable = false;
         }
 
         private void DuplicateTheoCrystal(DuplicatingTheoCrystal theo)
         {
-            // Update the original theo's duplication state
-            theo.RecordDuplication();
-
-            // Create a new duplicating theo crystal only if we haven't exceeded max generations
+            // Don't duplicate if original would exceed max generation limit
             if (theo.CurrentGeneration >= maxGenerations)
             {
                 flashing = true;
@@ -113,59 +147,82 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 return;
             }
 
-            // Create the clone with the next generation number
-            DuplicatingTheoCrystal clone = new DuplicatingTheoCrystal(
-                canDuplicateMultipleTimes: canDuplicateMultipleTimes,
-                hasDuplicated: false,
-                canClonesDuplicate: canClonesDuplicate,
-                maxGenerations: maxGenerations,
-                timeBetweenDuplications: timeBetweenDuplications,
-                spritePaths: spritePaths,
-                position: theo.Position + spawnOffset
-            )
+            try
             {
-                CurrentGeneration = 0
-            };
+                // Create a clone with proper configuration
+                Vector2 newPosition = theo.Position + spawnOffset;
+                
+                // Create the new crystal first
+                DuplicatingTheoCrystal clone = new DuplicatingTheoCrystal(
+                    newPosition,
+                    canDuplicateMultipleTimes,
+                    false,
+                    canClonesDuplicate,
+                    maxGenerations,
+                    timeBetweenDuplications,
+                    spritePaths,
+                    theo.CurrentGeneration + 1 // Increment generation to avoid infinite duplication
+                );
 
-            // Remove existing sprite and create new one
-            Sprite baseSprite = clone.Get<Sprite>();
-            if (baseSprite != null)
-            {
-                baseSprite.RemoveSelf();
+                // Add to scene 
+                Scene.Add(clone);
+
+                // Apply initial speed if specified
+                if (initialSpeed != Vector2.Zero)
+                {
+                    clone.Speed = initialSpeed;
+                }
+
+                // Bounce original crystal if requested
+                if (bounceBack)
+                {
+                    Vector2 currentSpeed = theo.Speed;
+                    if (currentSpeed != Vector2.Zero)
+                    {
+                        theo.Speed = -currentSpeed;
+                    }
+                    else
+                    {
+                        // If no speed, bounce in a sensible direction based on zone
+                        Vector2 direction = theo.Position - (Position + Collider.Center);
+                        if (direction != Vector2.Zero)
+                        {
+                            direction.Normalize();
+                            theo.Speed = direction * 100f; // Give a small bounce
+                        }
+                    }
+                }
+
+                // Record that the original crystal has duplicated
+                // This increments its generation and resets the duplication timer
+                theo.RecordDuplication();
+
+                // Remove original if requested - do this last to avoid null reference issues
+                if (removeOriginal)
+                {
+                    // Schedule for removal to avoid issues during iteration
+                    Engine.Scene.OnEndOfFrame += () => {
+                        theo.RemoveSelf();
+                    };
+                }
+
+                // Flash effect
+                flashing = true;
+                flash = 1f;
             }
-            clone.CreateSprite();
-
-            // Add to scene first so physics work properly
-            Scene.Add(clone);
-
-            // Apply initial velocity
-            if (initialSpeed != Vector2.Zero)
+            catch (Exception ex)
             {
-                clone.Speed = initialSpeed;
+                // Log the error but don't crash
+                Logger.Log(LogLevel.Error, "MaxAlHelper", $"Error during duplication: {ex.Message}");
+                
+                // Flash to indicate failure
+                flashing = true;
+                flash = 1f;
             }
-
-            // Handle original theo modifications
-            if (bounceBack)
-            {
-
-                 theo.Speed = -theo.Speed;
-
-            }
-
-            if (removeOriginal)
-            {
-                theo.RemoveSelf();
-                processedCrystals.Remove(theo);
-            }
-
-            // Visual feedback
-            flashing = true;
-            flash = 1f;
         }
 
         public override void Render()
         {
-            // Simple visualization for the zone
             Draw.Rect(Collider, baseColor * 0.25f);
             Draw.HollowRect(Collider, Color.Gray);
 
@@ -177,7 +234,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
         private void OnPlayer(Player player)
         {
-            // Optional: make the zone flash on contact
+            // Visual feedback when player enters
             flashing = true;
             flash = 1f;
         }

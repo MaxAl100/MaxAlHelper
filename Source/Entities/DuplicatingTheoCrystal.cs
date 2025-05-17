@@ -9,144 +9,162 @@ namespace Celeste.Mod.MaxAlHelper.Entities
     [CustomEntity("MaxAlHelper/DuplicatingTheoCrystal")]
     public class DuplicatingTheoCrystal : TheoCrystal
     {
-        public bool CanDuplicateMultipleTimes { get; set; } = false;
-        public bool HasDuplicated { get; set; } = false;
-        public bool CanClonesDuplicate { get; set; } = false;
+        public bool CanDuplicateMultipleTimes { get; set; }
+        public bool HasDuplicated { get; set; }
+        public bool CanClonesDuplicate { get; set; }
         public int MaxGenerations { get; set; } = 1;
         public float TimeBetweenDuplications { get; set; } = 1f;
-        public float DuplicationTimer { get; set; } = 0f; // Start at 0 so first duplication can happen immediately
-        public int CurrentGeneration { get; set; } = 0;
-        public string[] SpritePaths { get; set; } = { };
-        public Sprite Sprite;
+        public float DuplicationTimer { get; set; }
+        public int CurrentGeneration { get; set; }
+        public string[] SpritePaths { get; set; }
+        public Sprite CustomSprite;
 
-        // Track the last time this crystal was duplicated to prevent rapid duplications
         private float lastDuplicationTime = 0f;
-        private const float MinTimeBetweenDuplications = 0.5f; // Safety minimum
+        private const float MinTimeBetweenDuplications = 0.5f;
+        private Vector2 _initialSpeed = Vector2.Zero;
+        private bool _hasAppliedInitialSpeed = false;
 
-        // Property to access the Speed of the TheoCrystal directly
-        public Vector2 Speed
+        // Modified Speed property that won't override normal behavior
+        public Vector2 InitialSpeed
         {
-            get
-            {
-                // Try to access speed - fallback to zero if we can't
-                try
-                {
-                    if (_isSpeedPropertyInitialized)
-                    {
-                        return _theoCrystalSpeed;
-                    }
-                }
-                catch
-                {
-                    // Ignore failures at this point
-                }
-                return Vector2.Zero;
-            }
-            set
-            {
-                // Try to set the speed - this allows the zone to control crystal movement
-                try
-                {
-                    _theoCrystalSpeed = value;
-                    _isSpeedPropertyInitialized = true;
-                }
-                catch
-                {
-                    // Fall back to direct position update if needed
-                    Position += value * Engine.DeltaTime;
-                }
-            }
+            get => _initialSpeed;
+            set => _initialSpeed = value;
         }
 
-        // Internal tracking for speed property
-        private Vector2 _theoCrystalSpeed = Vector2.Zero;
-        private bool _isSpeedPropertyInitialized = false;
-
-        // Constructor for loading from EntityData (used by maps)
         public DuplicatingTheoCrystal(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
-            CanDuplicateMultipleTimes = data.Bool("canDuplicateMultipleTimes", false);
-            HasDuplicated = data.Bool("hasDuplicated", false);
-            CanClonesDuplicate = data.Bool("canClonesDuplicate", false);
-            MaxGenerations = data.Int("maxGenerations", 1);
-            TimeBetweenDuplications = Math.Max(MinTimeBetweenDuplications, data.Float("timeBetweenDuplications", 1f));
-            DuplicationTimer = 0f; // Start ready to duplicate
-            CurrentGeneration = data.Int("currentGeneration", 0);
-
-            string spritesString = data.Attr("spritePaths", "");
-            SpritePaths = string.IsNullOrEmpty(spritesString) ? new string[] { } : spritesString.Split(',');
-
-            Sprite baseSprite = Get<Sprite>();
-            if (baseSprite != null)
-            {
-                baseSprite.RemoveSelf();
-            }
-
-            CreateSprite();
+            Initialize(
+                data.Bool("canDuplicateMultipleTimes", false),
+                data.Bool("hasDuplicated", false),
+                data.Bool("canClonesDuplicate", false),
+                data.Int("maxGenerations", 1),
+                Math.Max(MinTimeBetweenDuplications, data.Float("timeBetweenDuplications", 1f)),
+                data.Int("currentGeneration", 0),
+                data.Attr("spritePaths", "")
+            );
         }
 
-        // Runtime duplication constructor
         public DuplicatingTheoCrystal(
+            Vector2 position,
             bool canDuplicateMultipleTimes = false,
             bool hasDuplicated = false,
             bool canClonesDuplicate = false,
             int maxGenerations = 1,
             float timeBetweenDuplications = 1f,
             string[] spritePaths = null,
-            Vector2? position = null
-        ) : base(position ?? Vector2.Zero)
+            int currentGeneration = 0
+        ) : base(position)
+        {
+            Initialize(
+                canDuplicateMultipleTimes,
+                hasDuplicated,
+                canClonesDuplicate,
+                maxGenerations,
+                Math.Max(MinTimeBetweenDuplications, timeBetweenDuplications),
+                currentGeneration,
+                null,
+                spritePaths
+            );
+        }
+
+        private void Initialize(
+            bool canDuplicateMultipleTimes,
+            bool hasDuplicated,
+            bool canClonesDuplicate,
+            int maxGenerations,
+            float timeBetweenDuplications,
+            int currentGeneration,
+            string spritesString = null,
+            string[] spritePaths = null)
         {
             CanDuplicateMultipleTimes = canDuplicateMultipleTimes;
             HasDuplicated = hasDuplicated;
             CanClonesDuplicate = canClonesDuplicate;
             MaxGenerations = maxGenerations;
-            TimeBetweenDuplications = Math.Max(MinTimeBetweenDuplications, timeBetweenDuplications);
-            DuplicationTimer = TimeBetweenDuplications; // Start with timer at max - need to wait before duplicating
-            SpritePaths = spritePaths ?? new string[] { };
+            TimeBetweenDuplications = timeBetweenDuplications;
+            DuplicationTimer = TimeBetweenDuplications; // Start with timer at full to prevent instant duplication
+            CurrentGeneration = currentGeneration;
 
-            Sprite baseSprite = Get<Sprite>();
-            if (baseSprite != null)
+            // Handle sprite paths
+            if (spritePaths != null)
             {
-                baseSprite.RemoveSelf();
+                SpritePaths = spritePaths;
+            }
+            else if (!string.IsNullOrEmpty(spritesString))
+            {
+                SpritePaths = spritesString.Split(',');
+            }
+            else
+            {
+                SpritePaths = new string[] { };
             }
 
+            // Don't remove the original sprite immediately, wait until we create our custom one
             CreateSprite();
         }
 
         public void CreateSprite()
         {
-            if (SpritePaths != null && SpritePaths.Length > 0)
+            // Safely remove existing custom sprite if it exists
+            if (CustomSprite != null)
             {
-                Sprite?.RemoveSelf();
+                Remove(CustomSprite);
+                CustomSprite = null;
+            }
 
-                // Always select a sprite based on the current generation
-                int spriteIndex = Math.Min(CurrentGeneration, SpritePaths.Length - 1);
-                if (spriteIndex < 0 || spriteIndex >= SpritePaths.Length)
+            // Use default sprite if no custom sprites specified
+            if (SpritePaths == null || SpritePaths.Length == 0 || string.IsNullOrEmpty(SpritePaths[0]))
+            {
+                // Keep the original sprite if we don't have a custom one
+                return;
+            }
+
+            // Choose sprite based on index (limited by array bounds)
+            int spriteIndex = 0;
+            if (SpritePaths.Length > 1)
+            {
+                // Use generation to select sprite if multiple are available
+                spriteIndex = Math.Min(CurrentGeneration, SpritePaths.Length - 1);
+            }
+
+            string spritePath = SpritePaths[spriteIndex].Trim();
+            if (string.IsNullOrEmpty(spritePath))
+            {
+                return; // Keep original sprite
+            }
+
+            try
+            {
+                // Remove the original sprite
+                Sprite baseSprite = Get<Sprite>();
+                if (baseSprite != null)
                 {
-                    // Safety check to prevent out of bounds
-                    spriteIndex = 0;
+                    Remove(baseSprite);
                 }
 
-                string spritePath = SpritePaths[spriteIndex];
-
-                if (!string.IsNullOrEmpty(spritePath))
+                // Create new sprite with specified path
+                CustomSprite = GFX.SpriteBank.Create(spritePath);
+                if (CustomSprite != null)
                 {
-                    Sprite = GFX.SpriteBank.Create(spritePath.Trim());
-                    Add(Sprite);
+                    Add(CustomSprite);
                 }
                 else
                 {
-                    // Fallback to default theo sprite if the path is empty
-                    Sprite = GFX.SpriteBank.Create("theo_crystal");
-                    Add(Sprite);
+                    // If sprite creation failed, log and revert to default
+                    Logger.Log(LogLevel.Warn, "MaxAlHelper", $"Failed to create sprite: {spritePath}");
+                    CustomSprite = GFX.SpriteBank.Create("theo_crystal");
+                    Add(CustomSprite);
                 }
             }
-            else
+            catch (Exception e)
             {
-                // Fallback to default theo sprite if no paths are provided
-                Sprite = GFX.SpriteBank.Create("theo_crystal");
-                Add(Sprite);
+                // Handle any exceptions during sprite creation
+                Logger.Log(LogLevel.Error, "MaxAlHelper", $"Error creating sprite: {e.Message}");
+                
+                // Fall back to default sprite
+                CustomSprite = GFX.SpriteBank.Create("theo_crystal");
+                Add(CustomSprite);
             }
         }
 
@@ -158,26 +176,38 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 DuplicationTimer -= Engine.DeltaTime;
             }
 
-            // Handle movement using base class
+            // Apply initial speed only once if set
+            if (!_hasAppliedInitialSpeed && _initialSpeed != Vector2.Zero)
+            {
+                // Apply initial velocity by directly setting the base class's Speed fields
+                // This will integrate with the normal Theo Crystal physics
+                Speed = _initialSpeed;
+                _hasAppliedInitialSpeed = true;
+            }
+
+            // Call base update to handle normal TheocrystalZone physics
             base.Update();
         }
 
-        // This method checks if the crystal can be duplicated by a DuplicatingTheoCrystalZone
         public bool CanDuplicate()
         {
-            // Check all conditions that would prevent duplication
+            // Clones can't duplicate if CanClonesDuplicate is false
+            if (!CanClonesDuplicate && CurrentGeneration > 0)
+                return false;
+
+            // Can't duplicate if timer is running
             if (DuplicationTimer > 0)
                 return false;
 
-            // Check if we've reached the max generation
+            // Can't duplicate if we're at max generations
             if (CurrentGeneration >= MaxGenerations)
                 return false;
 
-            // Check if we've already duplicated and can't do it multiple times
+            // Can't duplicate if we've already duplicated and multi-duplication is off
             if (HasDuplicated && !CanDuplicateMultipleTimes)
                 return false;
 
-            // Check if we're being duplicated too rapidly
+            // Make sure we're not duplicating too quickly
             float currentTime = (float)Scene.TimeActive;
             if (currentTime - lastDuplicationTime < MinTimeBetweenDuplications)
                 return false;
@@ -185,14 +215,17 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             return true;
         }
 
-        // Record that this crystal has been duplicated
         public void RecordDuplication()
         {
-            // Reset timer and track last duplication time
+            // Reset duplication timer
             DuplicationTimer = TimeBetweenDuplications;
             lastDuplicationTime = (float)Scene.TimeActive;
             HasDuplicated = true;
-            CurrentGeneration += 1;
+
+            // Increment generation of the duplicator
+            CurrentGeneration++;
+
+            // Update sprite for new generation
             CreateSprite();
         }
     }

@@ -9,20 +9,22 @@ duplicatingTheoCrystal.placements = {
         name = "normal",
         data = {
             canDuplicateMultipleTimes = false,
+            hasDuplicated = false,
             canClonesDuplicate = false,
             maxGenerations = 1,
             timeBetweenDuplications = 1.0,
-            spritePaths = "theo_crystal", -- comma-separated list of sprites
+            spritePaths = "theo_crystal",
             currentGeneration = 0
         }
     }
 }
 
--- Custom field information for better editor support
 duplicatingTheoCrystal.fieldInformation = {
     spritePaths = {
         fieldType = "string",
-        editable = true
+        editable = true,
+        options = {"theo_crystal"},
+        defaultValue = "theo_crystal"
     },
     timeBetweenDuplications = {
         fieldType = "number",
@@ -31,10 +33,13 @@ duplicatingTheoCrystal.fieldInformation = {
     maxGenerations = {
         fieldType = "integer",
         minimumValue = 0
+    },
+    currentGeneration = {
+        fieldType = "integer",
+        minimumValue = 0
     }
 }
 
--- Explanation when hovering
 duplicatingTheoCrystal.fieldOrder = {
     "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
     "timeBetweenDuplications", "spritePaths", "currentGeneration"

@@ -1,7 +1,7 @@
 local duplicatingTheoCrystalZone = {}
 
 duplicatingTheoCrystalZone.name = "MaxAlHelper/DuplicatingTheoCrystalZone"
-duplicatingTheoCrystalZone.depth = -100 -- Corresponds to Depths.FakeWalls in the C# code
+duplicatingTheoCrystalZone.depth = -100
 duplicatingTheoCrystalZone.nodeLimits = {1, -1}
 duplicatingTheoCrystalZone.nodeVisibility = "selected"
 
@@ -31,91 +31,86 @@ duplicatingTheoCrystalZone.fieldInformation = {
     speedY = {
         fieldType = "number",
         defaultValue = 0.0
+    },
+    maxTriggers = {
+        fieldType = "integer",
+        minimumValue = 0,
+        defaultValue = 0
+    },
+    spritePaths = {
+        fieldType = "string",
+        editable = true
+    },
+    triggerCount = {
+        fieldType = "integer",
+        minimumValue = 0,
+        defaultValue = 0,
+        editable = false
     }
 }
 
 duplicatingTheoCrystalZone.placements = {
-    name = "normal",
-    data = {
-        width = 32,
-        height = 32,
-        canDuplicateMultipleTimes = false,
-        canClonesDuplicate = false,
-        maxGenerations = 1,
-        timeBetweenDuplications = 1.0,
-        spritePaths = "",
-        offsetX = 0.0,
-        offsetY = 0.0,
-        speedX = 0.0,
-        speedY = 0.0,
-        bounceBack = false,
-        removeOriginal = false
+    {
+        name = "normal",
+        data = {
+            width = 32,
+            height = 32,
+            canDuplicateMultipleTimes = false,
+            canClonesDuplicate = false,
+            maxGenerations = 1,
+            timeBetweenDuplications = 1.0,
+            spritePaths = "",
+            offsetX = 0.0,
+            offsetY = 0.0,
+            speedX = 0.0,
+            speedY = 0.0,
+            bounceBack = false,
+            removeOriginal = false,
+            maxTriggers = 0,
+            triggerCount = 0
+        }
     }
 }
 
--- Display information for Loenn editor
 function duplicatingTheoCrystalZone.sprite(room, entity)
     local x, y = entity.x or 0, entity.y or 0
     local width, height = entity.width or 32, entity.height or 32
     
-    -- Base color similar to the C# code's Light Gray
     local baseColor = {0.75, 0.75, 0.75, 0.25}
     local borderColor = {0.5, 0.5, 0.5, 1.0}
     
-    -- Create visual representation
     local rectangle = require('structs.drawable_rectangle')
     local text = require('structs.drawable_text')
-    local drawableLine = require('structs.drawable_line')
     
     local elements = {
-        -- Background fill
         rectangle.fromRectangle("fill", x, y, width, height, baseColor),
-        -- Border
-        rectangle.fromRectangle("line", x, y, width, height, borderColor),
+        rectangle.fromRectangle("line", x, y, width, height, borderColor)
     }
     
-    -- Add text description
-    table.insert(elements, text.fromData({
-        text = "Duplicating Theo Zone",
-        x = x + width / 2,
-        y = y + height / 2,
-        alignX = 0.5,
-        alignY = 0.5,
-        font = "smallFont",
-        color = {1.0, 1.0, 1.0, 1.0}
-    }))
-    
-    -- Additional information about settings
+    -- Generation info
     local gens = entity.maxGenerations or 1
-    local info = string.format("Gen: %d", gens)
-    table.insert(elements, text.fromData({
-        text = info,
-        x = x + width / 2,
-        y = y + height / 2 + 10,
-        alignX = 0.5,
-        alignY = 0.5,
-        font = "pixelFont",
-        color = {1.0, 1.0, 1.0, 0.8}
-    }))
-    
-    -- Draw arrows if there's movement defined
-    if (entity.speedX and entity.speedX ~= 0) or (entity.speedY and entity.speedY ~= 0) then
-        local centerX, centerY = x + width / 2, y + height / 2
-        local speedX, speedY = entity.speedX or 0, entity.speedY or 0
-        local length = math.min(width, height) * 0.4
-        local normalizedLen = math.sqrt(speedX * speedX + speedY * speedY)
-        
-        if normalizedLen > 0 then
-            local dirX, dirY = speedX / normalizedLen, speedY / normalizedLen
-            table.insert(elements, drawableLine.fromPoints(
-                centerX, centerY,
-                centerX + dirX * length, centerY + dirY * length,
-                {1.0, 0.5, 0.0, 1.0}, 2
-            ))
-        end
+    local triggers = entity.maxTriggers or 0
+    local info = string.format("Gens: %d", gens)
+    if triggers > 0 then
+        info = info .. string.format("\nTriggers: %d", triggers)
     end
     
     return elements
 end
+
+-- If selection is causing issues, let's define a selection function
+function duplicatingTheoCrystalZone.selection(room, entity)
+    local x, y = entity.x or 0, entity.y or 0
+    local width, height = entity.width or 32, entity.height or 32
+    
+    return utils.rectangle(x, y, width, height)
+end
+
+duplicatingTheoCrystalZone.fieldOrder = {
+    "x", "y", "width", "height",
+    "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
+    "timeBetweenDuplications", "spritePaths", "offsetX", "offsetY",
+    "speedX", "speedY", "bounceBack", "removeOriginal", "maxTriggers"
+}
 
 return duplicatingTheoCrystalZone
