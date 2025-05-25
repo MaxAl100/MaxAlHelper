@@ -2,8 +2,6 @@ local duplicatingTheoCrystalZone = {}
 
 duplicatingTheoCrystalZone.name = "MaxAlHelper/DuplicatingTheoCrystalZone"
 duplicatingTheoCrystalZone.depth = -100
-duplicatingTheoCrystalZone.nodeLimits = {1, -1}
-duplicatingTheoCrystalZone.nodeVisibility = "selected"
 
 duplicatingTheoCrystalZone.fieldInformation = {
     maxGenerations = {
@@ -40,12 +38,6 @@ duplicatingTheoCrystalZone.fieldInformation = {
     spritePaths = {
         fieldType = "string",
         editable = true
-    },
-    triggerCount = {
-        fieldType = "integer",
-        minimumValue = 0,
-        defaultValue = 0,
-        editable = false
     }
 }
 
@@ -66,8 +58,7 @@ duplicatingTheoCrystalZone.placements = {
             speedY = 0.0,
             bounceBack = false,
             removeOriginal = false,
-            maxTriggers = 0,
-            triggerCount = 0
+            maxTriggers = 0
         }
     }
 }
@@ -80,7 +71,6 @@ function duplicatingTheoCrystalZone.sprite(room, entity)
     local borderColor = {0.5, 0.5, 0.5, 1.0}
     
     local rectangle = require('structs.drawable_rectangle')
-    local text = require('structs.drawable_text')
     
     local elements = {
         rectangle.fromRectangle("fill", x, y, width, height, baseColor),

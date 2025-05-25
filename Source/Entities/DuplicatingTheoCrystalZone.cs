@@ -9,7 +9,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
     [CustomEntity("MaxAlHelper/DuplicatingTheoCrystalZone")]
     public class DuplicatingTheoCrystalZone : Entity
     {
-        private static Color baseColor = Color.LightGray;
+        private static Color baseColor = Color.LightBlue * 0.5f;
         private float flash;
         private bool flashing;
 
@@ -32,6 +32,10 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         // Duplication cooldown to prevent multiple duplications in one frame
         private float duplicationCooldown = 0f;
         private const float MinDuplicationCooldown = 0.1f;
+
+        private List<Vector2> particles = new();
+        private Color particleColor = Color.White * 0.5f;
+        private static MTexture myParticle = GFX.Game["MaxAlHelper/particles/DuplicatingTheoCrystalParticle"];
 
         public DuplicatingTheoCrystalZone(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -67,6 +71,14 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             removeOriginal = data.Bool("removeOriginal", false);
 
             Add(new PlayerCollider(OnPlayer));
+
+            float numParticles = Width * Height / 16f;
+            float spacing = 8f; // Adjust for denser/sparser pattern
+            for (float x = spacing; x < Width; x += spacing) {
+                for (float y = spacing; y < Height; y += spacing) {
+                    particles.Add(new Vector2(x, y));
+                }
+            }
         }
 
         public override void Update()
@@ -108,7 +120,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 if (e is DuplicatingTheoCrystal theo && Collide.Check(this, theo))
                 {
                     // Check if this crystal can be duplicated by the zone
-                    if (theo.CanDuplicate() && (canDuplicateMultipleTimes || !theo.HasDuplicated))
+                    if (theo.CanDuplicate())
                     {
                         crystalsToDuplicate.Add(theo);
                     }
@@ -142,8 +154,6 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             // Don't duplicate if original would exceed max generation limit
             if (theo.CurrentGeneration >= maxGenerations)
             {
-                flashing = true;
-                flash = 1f;
                 return;
             }
 
@@ -163,6 +173,12 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     spritePaths,
                     theo.CurrentGeneration + 1 // Increment generation to avoid infinite duplication
                 );
+
+                if (!theo.CanClonesDuplicate)
+                {
+                    clone.HasDuplicated = true; // Prevent clones from duplicating
+                    clone.CanDuplicateMultipleTimes = false; // Prevent clones from duplicating
+                }
 
                 // Add to scene 
                 Scene.Add(clone);
@@ -224,7 +240,10 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         public override void Render()
         {
             Draw.Rect(Collider, baseColor * 0.25f);
-            Draw.HollowRect(Collider, Color.Gray);
+            Draw.HollowRect(Collider, Color.LightBlue);
+            foreach (Vector2 p in particles) {
+                myParticle.Draw(Position + p, Vector2.One * 0.5f, particleColor);
+            }
 
             if (flashing)
             {
