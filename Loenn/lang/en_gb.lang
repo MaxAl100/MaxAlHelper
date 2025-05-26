@@ -16,8 +16,31 @@ triggers.MaxAlHelper/StopOmniDirectionalSnowballTrigger.placements.name.normal=S
 
 
 entities.MaxAlHelper/DuplicatingTheoCrystalZone.placements.name.normal=Duplicating Theo Crystal Zone
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.bounceBack=Whether the theos that hit this will be bounced back or not
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.removeOriginal=Whether the theo that duplicates should be deleted or not
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.maxTriggers=How many times this zone can duplicate. 0 means infinite times
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.speedX=Initial X speed of the new theo
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.speedY=Initial Y speed of the new theo
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.offsetX=X Offset of the new theo
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.offsetY=Y Offset of the new theo
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.canDuplicateMultipleTimes=Whether after duplicating once it can keep duplicating (for the clone)
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.canClonesDuplicate=Whether the clones of this crystal can duplicate themselves (for the clone)
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.maxGenerations=The maximum number of times *this specific* crystal can duplicate. 0 means infinte times (for the clones)
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.timeBetweenDuplications=Time in seconds between each duplication. There is a lower limit of 1/10th of a second (for the clone)
+entities.MaxAlHelper/DuplicatingTheoCrystalZone.attributes.description.spritePaths=The sprites to be used in each generation, sepparated by commas (for the clone)
+
+
+
 
 entities.MaxAlHelper/DuplicatingTheoCrystal.placements.name.normal=Duplicating Theo Crystal
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.canDuplicateMultipleTimes=Whether after duplicating once it can keep duplicating
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.canClonesDuplicate=Whether the clones of this crystal can duplicate themselves
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.maxGenerations=The maximum number of times *this specific* crystal can duplicate. 0 means infinte times
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.timeBetweenDuplications=Time in seconds between each duplication. There is a lower limit of 1/10th of a second
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.spritePaths=The sprites to be used in each generation, sepparated by commas
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.currentGeneration=The generation that this crystal starts in. Determines the sprite to be used and the generations of the clones
+entities.MaxAlHelper/DuplicatingTheoCrystal.attributes.description.hasDuplicated=Whether this crystal has duplicated or not. Can be set in order to not allow duplication if it can't duplicate multiple times
+
 
 entities.MaxAlHelper/AbsorbCutsceneStarter.placements.name.normal=Absorb Cutscene Starter
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetRoom=Name of the room the player will end up being teleported to

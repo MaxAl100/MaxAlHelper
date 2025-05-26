@@ -96,11 +96,11 @@ function duplicatingTheoCrystalZone.selection(room, entity)
     return utils.rectangle(x, y, width, height)
 end
 
-duplicatingTheoCrystalZone.fieldOrder = {
-    "x", "y", "width", "height",
-    "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
-    "timeBetweenDuplications", "spritePaths", "offsetX", "offsetY",
-    "speedX", "speedY", "bounceBack", "removeOriginal", "maxTriggers"
-}
+-- duplicatingTheoCrystalZone.fieldOrder = {
+--     "x", "y", "width", "height",
+--     "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
+--     "timeBetweenDuplications", "spritePaths", "offsetX", "offsetY",
+--     "speedX", "speedY", "bounceBack", "removeOriginal", "maxTriggers"
+-- }
 
 return duplicatingTheoCrystalZone

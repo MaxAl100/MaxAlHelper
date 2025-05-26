@@ -33,9 +33,21 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         private float duplicationCooldown = 0f;
         private const float MinDuplicationCooldown = 0.1f;
 
-        private List<Vector2> particles = new();
+        private List<ParticleData> particles = new();
         private Color particleColor = Color.White * 0.5f;
         private static MTexture myParticle = GFX.Game["MaxAlHelper/particles/DuplicatingTheoCrystalParticle"];
+        
+        private struct ParticleData
+        {
+            public Vector2 Position;
+            public Vector2 Velocity;
+            
+            public ParticleData(Vector2 position, Vector2 velocity)
+            {
+                Position = position;
+                Velocity = velocity;
+            }
+        }
 
         public DuplicatingTheoCrystalZone(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -72,18 +84,16 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
             Add(new PlayerCollider(OnPlayer));
 
-            float numParticles = Width * Height / 16f;
-            float spacing = 8f; // Adjust for denser/sparser pattern
-            for (float x = spacing; x < Width; x += spacing) {
-                for (float y = spacing; y < Height; y += spacing) {
-                    particles.Add(new Vector2(x, y));
-                }
-            }
+            // Initialize particles with random positions and velocities
+            InitializeParticles();
         }
 
         public override void Update()
         {
             base.Update();
+
+            // Update particles
+            UpdateParticles();
 
             // Update flashing effect
             if (flashing)
@@ -111,10 +121,10 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
             // Look for theo crystals to duplicate
             Collidable = true;
-            
+
             // Store crystals to duplicate - don't modify during enumeration
             List<DuplicatingTheoCrystal> crystalsToDuplicate = new List<DuplicatingTheoCrystal>();
-            
+
             foreach (Entity e in Scene.Tracker.GetEntities<DuplicatingTheoCrystal>())
             {
                 if (e is DuplicatingTheoCrystal theo && Collide.Check(this, theo))
@@ -126,18 +136,18 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     }
                 }
             }
-            
+
             // Only duplicate one crystal per frame to prevent issues
             if (crystalsToDuplicate.Count > 0)
             {
                 DuplicateTheoCrystal(crystalsToDuplicate[0]);
-                
+
                 // Set a cooldown to prevent duplicating too many crystals at once
                 duplicationCooldown = MinDuplicationCooldown;
-                
+
                 // Increment trigger count
                 triggerCount++;
-                
+
                 // Check if we should remove ourselves after this duplication
                 if (maxTriggers > 0 && triggerCount >= maxTriggers)
                 {
@@ -145,8 +155,91 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     return;
                 }
             }
+        }
 
-            Collidable = false;
+        private void InitializeParticles()
+        {
+            int numParticles = (int)(Width * Height / 64f); // Adjust density as needed
+
+            for (int i = 0; i < numParticles; i++)
+            {
+                Vector2 position = new Vector2(
+                    Calc.Random.Range(0f, Width),
+                    Calc.Random.Range(0f, Height)
+                );
+
+                Vector2 velocity = new Vector2(
+                    Calc.Random.Range(10f, 30f), // Random horizontal speed (rightward)
+                    Calc.Random.Range(10f, 30f)  // Random vertical speed (downward)
+                );
+
+                particles.Add(new ParticleData(position, velocity));
+            }
+        }
+
+        private void UpdateParticles()
+        {
+            // Update existing particles
+            for (int i = particles.Count - 1; i >= 0; i--)
+            {
+                ParticleData particle = particles[i];
+                particle.Position += particle.Velocity * Engine.DeltaTime;
+                
+                // Remove particles when their bottom-right corner has left the zone
+                // Assuming particle sprite is about 5x5 pixels
+                float particleSize = 5f;
+                if (particle.Position.X + particleSize > Width || particle.Position.Y + particleSize > Height)
+                {
+                    particles.RemoveAt(i);
+                }
+                else
+                {
+                    particles[i] = particle;
+                }
+            }
+            
+            // Add new particles along the top and left edges to maintain density
+            int targetParticleCount = (int)(Width * Height / 64f);
+            int particlesToAdd = Math.Max(0, targetParticleCount - particles.Count);
+            
+            // Limit how many particles we try to add per frame to prevent performance issues
+            int maxParticlesPerFrame = 5;
+            particlesToAdd = Math.Min(particlesToAdd, maxParticlesPerFrame);
+            
+            for (int i = 0; i < particlesToAdd; i++)
+            {
+                Vector2 position;
+                
+                // Choose spawn edge based on relative sizes (longer edge has higher chance)
+                float topEdgeWeight = Width;
+                float leftEdgeWeight = Height;
+                float totalWeight = topEdgeWeight + leftEdgeWeight;
+                bool spawnFromTop = Calc.Random.NextFloat() < (topEdgeWeight / totalWeight);
+                
+                if (spawnFromTop)
+                {
+                    // Spawn from top edge
+                    position = new Vector2(
+                        Calc.Random.Range(0f, Width), // Along entire top width
+                        Calc.Random.Range(0f, 0f)    // Just above the zone (closer to edge)
+                    );
+                }
+                else
+                {
+                    // Spawn from left edge
+                    position = new Vector2(
+                        Calc.Random.Range(0f, 0f),   // Just left of the zone (closer to edge)
+                        Calc.Random.Range(0f, Height) // Along entire left height
+                    );
+                }
+                
+                Vector2 velocity = new Vector2(
+                    Calc.Random.Range(10f, 30f), // Random horizontal speed (rightward)
+                    Calc.Random.Range(10f, 30f)  // Random vertical speed (downward)
+                );
+                
+                particles.Add(new ParticleData(position, velocity));
+            }
         }
 
         private void DuplicateTheoCrystal(DuplicatingTheoCrystal theo)
@@ -241,8 +334,8 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         {
             Draw.Rect(Collider, baseColor * 0.25f);
             Draw.HollowRect(Collider, Color.LightBlue);
-            foreach (Vector2 p in particles) {
-                myParticle.Draw(Position + p, Vector2.One * 0.5f, particleColor);
+            foreach (ParticleData p in particles) {
+                myParticle.Draw(Position + p.Position, Vector2.One * 0.5f, particleColor);
             }
 
             if (flashing)

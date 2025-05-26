@@ -40,9 +40,9 @@ duplicatingTheoCrystal.fieldInformation = {
     }
 }
 
-duplicatingTheoCrystal.fieldOrder = {
-    "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
-    "timeBetweenDuplications", "spritePaths", "currentGeneration"
-}
+-- duplicatingTheoCrystal.fieldOrder = {
+--     "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
+--     "timeBetweenDuplications", "spritePaths", "currentGeneration"
+-- }
 
 return duplicatingTheoCrystal

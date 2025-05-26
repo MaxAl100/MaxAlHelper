@@ -20,7 +20,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         public Sprite CustomSprite;
 
         private float lastDuplicationTime = 0f;
-        private const float MinTimeBetweenDuplications = 0.5f;
+        private const float MinTimeBetweenDuplications = 0.1f;
         private Vector2 _initialSpeed = Vector2.Zero;
         private bool _hasAppliedInitialSpeed = false;
 
