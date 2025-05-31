@@ -98,7 +98,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     Audio.SetMusic(null);
                     level.Session.Level = starter.targetRoom;
                     level.Session.FirstLevel = false;
-                    level.Session.RespawnPoint = level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
+                    level.Session.RespawnPoint = GetSpawnPoint(level, starter.targetRoom, starter.targetSpawnId);
                     level.LoadLevel(Player.IntroTypes.None);
                     level.Wipe.Cancel();
                 }
@@ -109,7 +109,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     level.UnloadLevel();
                     level.Session.Level = starter.targetRoom;
                     level.Session.FirstLevel = false;
-                    level.Session.RespawnPoint = level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
+                    level.Session.RespawnPoint = GetSpawnPoint(level, starter.targetRoom, starter.targetSpawnId);
                     if (starter.introType == "Fall") level.LoadLevel(Player.IntroTypes.Fall);
                     else if (starter.introType == "Transition") level.LoadLevel(Player.IntroTypes.Transition);
                     else if (starter.introType == "Respawn") level.LoadLevel(Player.IntroTypes.Respawn);
@@ -128,6 +128,31 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     }
                 }
             };
+        }
+
+        private Vector2 GetSpawnPoint(Level level, string targetRoom, string spawnId)
+        {
+            // If no specific spawn ID is provided or it's empty, use default spawn
+            if (string.IsNullOrEmpty(spawnId) || spawnId == "default")
+            {
+                return level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
+            }
+
+            // Try to find the specific spawn point by ID
+            LevelData levelData = level.Session.MapData.Levels.Find(l => l.Name == targetRoom);
+            if (levelData != null)
+            {
+                foreach (var entity in levelData.Entities)
+                {
+                    if (entity.Name == "player" && entity.Attr("id", "") == spawnId)
+                    {
+                        return new Vector2(entity.Position.X + levelData.Bounds.X, entity.Position.Y + levelData.Bounds.Y);
+                    }
+                }
+            }
+
+            // If spawn ID not found, fall back to default spawn
+            return level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
         }
     }
 }

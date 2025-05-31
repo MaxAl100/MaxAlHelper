@@ -31,7 +31,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
         // Duplication cooldown to prevent multiple duplications in one frame
         private float duplicationCooldown = 0f;
-        private const float MinDuplicationCooldown = 0.1f;
+        private const float MinDuplicationCooldown = 0.05f;
 
         private List<ParticleData> particles = new();
         private Color particleColor = Color.White * 0.5f;
@@ -125,15 +125,15 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             // Store crystals to duplicate - don't modify during enumeration
             List<DuplicatingTheoCrystal> crystalsToDuplicate = new List<DuplicatingTheoCrystal>();
 
-            foreach (Entity e in Scene.Tracker.GetEntities<DuplicatingTheoCrystal>())
+            // Using both optimization tricks:
+            // 1. Direct type casting in foreach
+            // 2. Using CollideAll instead of manual collision checking
+            foreach (DuplicatingTheoCrystal theo in this.CollideAll<DuplicatingTheoCrystal>())
             {
-                if (e is DuplicatingTheoCrystal theo && Collide.Check(this, theo))
+                // Check if this crystal can be duplicated by the zone
+                if (theo.CanDuplicate())
                 {
-                    // Check if this crystal can be duplicated by the zone
-                    if (theo.CanDuplicate())
-                    {
-                        crystalsToDuplicate.Add(theo);
-                    }
+                    crystalsToDuplicate.Add(theo);
                 }
             }
 

@@ -12,6 +12,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
     {
         private TalkComponent talk;
         public string targetRoom;
+        public string targetSpawnId;  // Added this property
         public int walkAroundDistance;
         public string introType;
         public Vector2 targetAbsorbPosition;
@@ -27,6 +28,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
             // Read values from EntityData (defined in Lönn or Ahorn)
             this.targetRoom = data.Attr("targetRoom", "a-room-name"); // default if not defined
+            this.targetSpawnId = data.Attr("targetSpawnId", "");
             this.walkAroundDistance = data.Int("walkAroundDistance", 8);
             this.introType = data.Attr("introType", "None");
             this.targetAbsorbPosition = new Vector2(
