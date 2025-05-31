@@ -132,27 +132,44 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
         private Vector2 GetSpawnPoint(Level level, string targetRoom, string spawnId)
         {
-            // If no specific spawn ID is provided or it's empty, use default spawn
-            if (string.IsNullOrEmpty(spawnId) || spawnId == "default")
+            // Get the target room's data first
+            LevelData levelData = level.Session.MapData.Levels.Find(l => l.Name == targetRoom);
+            if (levelData == null)
             {
-                return level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
+                // If we can't find the target room, return a safe default
+                return Vector2.Zero;
             }
 
-            // Try to find the specific spawn point by ID
-            LevelData levelData = level.Session.MapData.Levels.Find(l => l.Name == targetRoom);
-            if (levelData != null)
+            // If no specific spawn ID is provided or it's empty, use the target room's default spawn
+            if (string.IsNullOrEmpty(spawnId) || spawnId == "default")
             {
-                foreach (var entity in levelData.Entities)
+                // Use the target room's first spawn point
+                if (levelData.Spawns != null && levelData.Spawns.Count > 0)
                 {
-                    if (entity.Name == "player" && entity.Attr("id", "") == spawnId)
-                    {
-                        return new Vector2(entity.Position.X + levelData.Bounds.X, entity.Position.Y + levelData.Bounds.Y);
-                    }
+                    return levelData.Spawns[0];
+                }
+                // If no spawns defined, use the room's bounds center or top-left
+                return new Vector2(levelData.Bounds.Left + 8, levelData.Bounds.Top + 8);
+            }
+
+            // Try to find the specific spawn point by ID in the target room
+            foreach (var entity in levelData.Entities)
+            {
+                if (entity.Name == "player" && entity.Attr("id", "") == spawnId)
+                {
+                    // Entity positions are already in world coordinates for the room
+                    return entity.Position;
                 }
             }
 
-            // If spawn ID not found, fall back to default spawn
-            return level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
+            // If spawn ID not found, fall back to the target room's default spawn
+            if (levelData.Spawns != null && levelData.Spawns.Count > 0)
+            {
+                return levelData.Spawns[0];
+            }
+            
+            // Ultimate fallback - safe position in target room
+            return new Vector2(levelData.Bounds.Left + 8, levelData.Bounds.Top + 8);
         }
     }
 }
