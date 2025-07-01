@@ -16,6 +16,32 @@ table.insert(introTypeOptions, "WakeUp")
 table.insert(introTypeOptions, "ThinkForABit")
 table.insert(introTypeOptions, "TempleMirrorVoid")
 
+local wipeTypeOptions = {
+    {"Angled","Celeste.AngledWipe"},
+    {"Dream","Celeste.DreamWipe"},
+    {"Curtain","Celeste.CurtainWipe"},
+    {"Drop","Celeste.DropWipe"},
+    {"Fade","Celeste.FadeWipe"},
+    {"Fall","Celeste.FallWipe"},
+    {"Heart","Celeste.HeartWipe"},
+    {"KeyDoor","Celeste.KeyDoorWipe"},
+    {"Mountain","Celeste.MountainWipe"},
+    {"Starfield","Celeste.StarfieldWipe"},
+    {"Wind","Celeste.WindWipe"},
+    {"Spotlight","Celeste.SpotlightWipe"},
+    {"Diamond [Femto Helper]","Celeste.Mod.FemtoHelper.Wipes.DiamondWipe"},
+    {"Sinewave [Femto Helper]","Celeste.Mod.FemtoHelper.Wipes.SineWipe"},
+    {"Square [Femto Helper]","Celeste.Mod.FemtoHelper.Wipes.SquareWipe"},
+    {"Bars [Femto Helper]", "Celeste.Mod.FemtoHelper.Wipes.CirclerWipe"},
+    {"Diagrid [Femto Helper]", "Celeste.Mod.FemtoHelper.Wipes.DiagridWipe"},
+    {"Triangles [Femto Helper]", "CliffhangerWipe"},
+    {"Arrow [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Arrow"},
+    {"Dots [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Dots"},
+    {"Rocks [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Rocks"},
+    {"Spinners [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Speen"},
+    {"Vines [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Vines"}
+}
+
 absorbCutsceneStarter.fieldInformation = {
     targetRoom = {
         fieldType = "MaxAlHelper.room_names"
@@ -53,6 +79,13 @@ absorbCutsceneStarter.fieldInformation = {
     },
     zoomIn = {
         fieldType = "boolean"
+    },
+    setFlag = {
+        fieldType = "string"
+    },
+    wipeType = {
+        options = wipeTypeOptions,
+        editable = false
     }
 }
 
@@ -71,6 +104,8 @@ absorbCutsceneStarter.placements = {
             targetRoomTransitionX = 0,
             targetRoomTransitionY = 0,
             zoomIn = true,
+            setFlag = "",
+            wipeType = "Celeste.SpotlightWipe",
         }
     }
 }

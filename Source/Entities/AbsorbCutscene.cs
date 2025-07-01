@@ -79,18 +79,68 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             yield return 0.1f;
             player.ForceStrongWindHair.X = 0f;
             SpotlightWipe.FocusPoint = player.Position - offset + starter.targetRoomTransition;
-            SpotlightWipe spotWipe = new SpotlightWipe(base.Scene, wipeIn: false, delegate
+            yield return 0.1f;
+            player.ForceStrongWindHair.X = 0f;
+            SpotlightWipe.FocusPoint = player.Position - offset + starter.targetRoomTransition;
+            
+            // Create the wipe dynamically based on the selected type - IMPROVED VERSION
+            ScreenWipe wipe = CreateWipe(starter.wipeType, level);
+            
+            // Set the wipe directly on the level's Wipe property for one-time use
+            level.Wipe = wipe;
+        }
+
+        private ScreenWipe CreateWipe(string wipeTypeName, Level level)
+        {
+            Type wipeType = null;
+
+            // Method 1: Try direct type name first
+            if (!string.IsNullOrEmpty(wipeTypeName))
             {
-                Thread.Sleep(100);
-                EndCutscene(level);
-            });
-            level.Add(spotWipe);
+                // Try getting from the current app domain assemblies
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    wipeType = assembly.GetType(wipeTypeName);
+                    if (wipeType != null) break;
+                    
+                    // Also try without namespace prefix
+                    wipeType = assembly.GetType(wipeTypeName);
+                    if (wipeType != null) break;
+                }
+            }
+
+            // Method 2: Fallback to SpotlightWipe if nothing found
+            if (wipeType == null)
+            {
+                wipeType = typeof(SpotlightWipe);
+            }
+
+            // Create the wipe instance
+            try
+            {
+                return (ScreenWipe)Activator.CreateInstance(wipeType, level, false, new Action(() => {
+                    Thread.Sleep(100);
+                    EndCutscene(level);
+                }));
+            }
+            catch (Exception)
+            {
+                // If creation fails, fallback to SpotlightWipe (just in case)
+                return new SpotlightWipe(level, false, new Action(() => {
+                    Thread.Sleep(100);
+                    EndCutscene(level);
+                }));
+            }
         }
 
         public override void OnEnd(Level level)
         {
             level.OnEndOfFrame += delegate
             {
+                if (!string.IsNullOrEmpty(starter.setFlag))
+                {
+                    level.Session.SetFlag(starter.setFlag);
+                }
                 if (WasSkipped)
                 {
                     level.Remove(player);

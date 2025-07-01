@@ -245,7 +245,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         private void DuplicateTheoCrystal(DuplicatingTheoCrystal theo)
         {
             // Don't duplicate if original would exceed max generation limit
-            if (theo.CurrentGeneration >= maxGenerations)
+            if (maxGenerations != 0 && theo.CurrentGeneration >= maxGenerations)
             {
                 return;
             }

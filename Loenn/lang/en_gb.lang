@@ -54,3 +54,5 @@ entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetRoomTran
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetRoomTransitionY=Relative Y position from below the player where the room transition animation happens
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.zoomIn=Whether there should be a zoom animation or not when transitioning
 entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.targetSpawnId=The spawn id it should tp towards. If empty it will go towards the first DefaultSpawn it finds, otherwise the most bottom-left spawn
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.setFlag=Flag to be set after the cutscene ends (even when skipped)
+entities.MaxAlHelper/AbsorbCutsceneStarter.attributes.description.wipeType=Wipe to be used. 
