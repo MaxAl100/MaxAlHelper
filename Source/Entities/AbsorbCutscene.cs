@@ -92,46 +92,79 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
         private ScreenWipe CreateWipe(string wipeTypeName, Level level)
         {
-            Type wipeType = null;
-
-            // Method 1: Try direct type name first
-            if (!string.IsNullOrEmpty(wipeTypeName))
+            if (string.IsNullOrEmpty(wipeTypeName))
             {
-                // Try getting from the current app domain assemblies
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                return new SpotlightWipe(level, false, () => {
+                    Thread.Sleep(100);
+                    EndCutscene(level);
+                });
+            }
+
+            // Special case for MaxHelpingHand's custom wipe
+
+            // Uncomplete, didn't manage to get it working
+
+            // if (wipeTypeName.StartsWith("MaxHelpingHand/CustomWipe:"))
+            // {
+            //     Type customWipeType = null;
+
+            //     foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            //     {
+            //         customWipeType = assembly.GetType("Celeste.Mod.MaxHelpingHand.CustomWipe");
+            //         if (customWipeType != null)
+            //             break;
+            //     }
+
+            //     if (customWipeType != null)
+            //     {
+            //         try
+            //         {
+            //             // Constructor: CustomWipe(Level level, bool wipeIn, string wipeId, Action onComplete)
+            //             object wipe = Activator.CreateInstance(customWipeType, level, false, wipeTypeName, new Action(() => {
+            //                 Thread.Sleep(100);
+            //                 EndCutscene(level);
+            //             }));
+
+            //             return wipe as ScreenWipe;
+            //         }
+            //         catch (Exception e)
+            //         {
+            //             Logger.Log("MaxAlHelper", $"Failed to instantiate CustomWipe: {e}");
+            //         }
+            //     }
+            // }
+
+            // Attempt to instantiate as a normal wipe class
+            Type wipeType = null;
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                wipeType = assembly.GetType(wipeTypeName);
+                if (wipeType != null)
+                    break;
+            }
+
+            if (wipeType != null)
+            {
+                try
                 {
-                    wipeType = assembly.GetType(wipeTypeName);
-                    if (wipeType != null) break;
-                    
-                    // Also try without namespace prefix
-                    wipeType = assembly.GetType(wipeTypeName);
-                    if (wipeType != null) break;
+                    return (ScreenWipe)Activator.CreateInstance(wipeType, level, false, new Action(() => {
+                        Thread.Sleep(100);
+                        EndCutscene(level);
+                    }));
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("MaxAlHelper", $"Failed to instantiate wipe type {wipeTypeName}: {e}");
                 }
             }
 
-            // Method 2: Fallback to SpotlightWipe if nothing found
-            if (wipeType == null)
-            {
-                wipeType = typeof(SpotlightWipe);
-            }
-
-            // Create the wipe instance
-            try
-            {
-                return (ScreenWipe)Activator.CreateInstance(wipeType, level, false, new Action(() => {
-                    Thread.Sleep(100);
-                    EndCutscene(level);
-                }));
-            }
-            catch (Exception)
-            {
-                // If creation fails, fallback to SpotlightWipe (just in case)
-                return new SpotlightWipe(level, false, new Action(() => {
-                    Thread.Sleep(100);
-                    EndCutscene(level);
-                }));
-            }
+            // Final fallback
+            return new SpotlightWipe(level, false, () => {
+                Thread.Sleep(100);
+                EndCutscene(level);
+            });
         }
+
 
         public override void OnEnd(Level level)
         {

@@ -35,11 +35,12 @@ local wipeTypeOptions = {
     {"Bars [Femto Helper]", "Celeste.Mod.FemtoHelper.Wipes.CirclerWipe"},
     {"Diagrid [Femto Helper]", "Celeste.Mod.FemtoHelper.Wipes.DiagridWipe"},
     {"Triangles [Femto Helper]", "CliffhangerWipe"},
-    {"Arrow [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Arrow"},
-    {"Dots [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Dots"},
-    {"Rocks [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Rocks"},
-    {"Spinners [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Speen"},
-    {"Vines [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Vines"}
+    -- Didn't manage to get these working:
+    -- {"Arrow [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Arrow"},
+    -- {"Dots [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Dots"},
+    -- {"Rocks [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Rocks"},
+    -- {"Spinners [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Speen"},
+    -- {"Vines [Jungle Helper + Maddie's Helping Hand]", "MaxHelpingHand/CustomWipe:JungleHelper/Vines"}
 }
 
 absorbCutsceneStarter.fieldInformation = {
