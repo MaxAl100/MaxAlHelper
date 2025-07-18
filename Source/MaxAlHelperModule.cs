@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Celeste.Mod.MaxAlHelper.AuspiciousFixes;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.ModInterop;
 
 namespace Celeste.Mod.MaxAlHelper;
 
@@ -20,18 +24,20 @@ public class MaxAlHelperModule : EverestModule
     public MaxAlHelperModule()
     {
         Instance = this;
-    #if DEBUG
+#if DEBUG
         // debug builds use verbose logging
         Logger.SetLogLevel(nameof(MaxAlHelperModule), LogLevel.Verbose);
-    #else
+#else
         // release builds use info logging to reduce spam in log files
         Logger.SetLogLevel(nameof(MaxAlHelperModule), LogLevel.Info);
-    #endif
+#endif
     }
 
     public override void Load()
     {
         // TODO: apply any hooks that should always be active
+        typeof(TemplateIop).ModInterop();
+        DashNegatorTemplateRegistration.RegisterDashNegatorTemplate();
     }
 
 
@@ -40,39 +46,6 @@ public class MaxAlHelperModule : EverestModule
     {
         // TODO: unapply any hooks applied in Load()
     }
+    
 
-    public class DashNegatorTemplateComponent : Component
-    {
-        // Your existing implementation
-        public Entity DashNegator { get; private set; }
-
-        public DashNegatorTemplateComponent(Entity dashNegator) : base(true, false)
-        {
-            DashNegator = dashNegator;
-        }
-    }
-
-    private static Type GetFactoryHelperType(string typeName)
-    {
-        foreach (var module in Everest.Modules)
-        {
-            if (module.Metadata.Name == "FactoryHelper")
-            {
-                return module.GetType().Assembly.GetType(typeName);
-            }
-        }
-        return null;
-    }
-
-    private static Type GetAuspiciousHelperType(string typeName)
-    {
-        foreach (var module in Everest.Modules)
-        {
-            if (module.Metadata.Name == "auspicioushelper")
-            {
-                return module.GetType().Assembly.GetType(typeName);
-            }
-        }
-        return null;
-    }
 }
