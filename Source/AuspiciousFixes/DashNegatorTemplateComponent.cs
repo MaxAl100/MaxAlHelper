@@ -29,6 +29,7 @@ public class DashNegatorTemplateComponent : TemplateIop.TemplateChildComponent
     public DashNegatorTemplateComponent(Entity entity) : base(entity)
     {
         dashNegator = entity;
+        Vector2 offset = Vector2.Zero;
 
         AddSelf = (List<Entity> entities) =>
         {
@@ -45,6 +46,35 @@ public class DashNegatorTemplateComponent : TemplateIop.TemplateChildComponent
                     }
                 }
             }
+        };
+
+        // Set up positioning callbacks to follow the template
+        RepositionCB = (Vector2 newLocation, Vector2 liftSpeed) =>
+        {
+            Vector2 targetPosition = newLocation + offset;
+            dashNegator.Position = targetPosition;
+            
+            // Also move the turret solids
+            if (turretSolidsField != null)
+            {
+                var turretSolids = turretSolidsField.GetValue(dashNegator) as Solid[];
+                if (turretSolids != null)
+                {
+                    foreach (var solid in turretSolids)
+                    {
+                        if (solid != null)
+                        {
+                            // solid.Position = targetPosition + (solid.Position - dashNegator.Position);
+                            solid.Position = solid.Position - dashNegator.Position;
+                        }
+                    }
+                }
+            }
+        };
+
+        SetOffsetCB = (Vector2 parentPosition) =>
+        {
+            offset = dashNegator.Position - parentPosition;
         };
     }
 }
