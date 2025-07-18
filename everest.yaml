@@ -7,3 +7,7 @@
   OptionalDependencies:
     - Name: MaxHelpingHand
       Version: 1.31.2
+    - Name: auspicioushelper
+      Version: 0.2.1
+    - Name: FactoryHelper
+      Version: 1.4.0
