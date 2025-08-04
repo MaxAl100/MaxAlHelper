@@ -14,6 +14,7 @@ duplicatingTheoCrystalZone.fieldInformation = {
         minimumValue = 0.1,
         defaultValue = 1.0
     },
+    -- Clone settings
     offsetX = {
         fieldType = "number",
         defaultValue = 0.0
@@ -30,6 +31,24 @@ duplicatingTheoCrystalZone.fieldInformation = {
         fieldType = "number",
         defaultValue = 0.0
     },
+    -- Original theo settings
+    originalOffsetX = {
+        fieldType = "number",
+        defaultValue = 0.0
+    },
+    originalOffsetY = {
+        fieldType = "number",
+        defaultValue = 0.0
+    },
+    originalSpeedX = {
+        fieldType = "number",
+        defaultValue = 0.0
+    },
+    originalSpeedY = {
+        fieldType = "number",
+        defaultValue = 0.0
+    },
+    -- Other settings
     maxTriggers = {
         fieldType = "integer",
         minimumValue = 0,
@@ -52,11 +71,18 @@ duplicatingTheoCrystalZone.placements = {
             maxGenerations = 1,
             timeBetweenDuplications = 1.0,
             spritePaths = "",
+            -- Clone settings
             offsetX = 0.0,
             offsetY = 0.0,
             speedX = 0.0,
             speedY = 0.0,
+            -- Original theo settings
+            originalOffsetX = 0.0,
+            originalOffsetY = 0.0,
+            originalSpeedX = 0.0,
+            originalSpeedY = 0.0,
             bounceBack = false,
+            bounceBackUseDirection = true,
             removeOriginal = false,
             maxTriggers = 0
         }
@@ -67,40 +93,36 @@ function duplicatingTheoCrystalZone.sprite(room, entity)
     local x, y = entity.x or 0, entity.y or 0
     local width, height = entity.width or 32, entity.height or 32
     
-    local baseColor = {0.75, 0.75, 0.75, 0.25}
-    local borderColor = {0.5, 0.5, 0.5, 1.0}
+    -- Use standard Lönn drawing approach
+    local drawableRectangle = require("structs.drawable_rectangle")
     
-    local rectangle = require('structs.drawable_rectangle')
+    -- Light blue colors
+    local fillColor = {0.68, 0.85, 1.0, 0.25}
+    local borderColor = {0.68, 0.85, 1.0, 1.0}
     
-    local elements = {
-        rectangle.fromRectangle("fill", x, y, width, height, baseColor),
-        rectangle.fromRectangle("line", x, y, width, height, borderColor)
+    return {
+        drawableRectangle.fromRectangle("fill", x, y, width, height, fillColor),
+        drawableRectangle.fromRectangle("line", x, y, width, height, borderColor)
     }
-    
-    -- Generation info
-    local gens = entity.maxGenerations or 1
-    local triggers = entity.maxTriggers or 0
-    local info = string.format("Gens: %d", gens)
-    if triggers > 0 then
-        info = info .. string.format("\nTriggers: %d", triggers)
-    end
-    
-    return elements
 end
 
--- If selection is causing issues, let's define a selection function
 function duplicatingTheoCrystalZone.selection(room, entity)
-    local x, y = entity.x or 0, entity.y or 0
-    local width, height = entity.width or 32, entity.height or 32
-    
-    return utils.rectangle(x, y, width, height)
+    return utils.rectangle(entity.x or 0, entity.y or 0, entity.width or 32, entity.height or 32)
 end
 
--- duplicatingTheoCrystalZone.fieldOrder = {
---     "x", "y", "width", "height",
---     "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
---     "timeBetweenDuplications", "spritePaths", "offsetX", "offsetY",
---     "speedX", "speedY", "bounceBack", "removeOriginal", "maxTriggers"
--- }
+-- Organize fields in a logical order
+duplicatingTheoCrystalZone.fieldOrder = {
+    "x", "y", "width", "height",
+    -- Core duplication settings
+    "canDuplicateMultipleTimes", "canClonesDuplicate", "maxGenerations", 
+    "timeBetweenDuplications", "maxTriggers",
+    -- Clone settings
+    "offsetX", "offsetY", "speedX", "speedY", 
+    -- Original theo settings
+    "originalOffsetX", "originalOffsetY", "originalSpeedX", "originalSpeedY",
+    "bounceBack", "bounceBackUseDirection", "removeOriginal",
+    -- Visual settings
+    "spritePaths"
+}
 
 return duplicatingTheoCrystalZone

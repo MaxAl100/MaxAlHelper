@@ -23,11 +23,16 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         private float timeBetweenDuplications;
         private string[] spritePaths;
 
-        // Positioning and velocity settings
+        // Positioning and velocity settings for clones
         private Vector2 spawnOffset;
         private Vector2 initialSpeed;
-        private bool bounceBack;
         private bool removeOriginal;
+
+        // Original theo crystal modification settings
+        private Vector2 originalOffset;
+        private Vector2 originalSpeed;
+        private bool bounceBack;
+        private bool bounceBackUseDirection; // If true, bounce in direction away from zone center
 
         // Duplication cooldown to prevent multiple duplications in one frame
         private float duplicationCooldown = 0f;
@@ -68,7 +73,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             string spritesString = data.Attr("spritePaths", "");
             spritePaths = string.IsNullOrEmpty(spritesString) ? new string[] { } : spritesString.Split(',');
 
-            // Positioning and velocity settings
+            // Clone positioning and velocity settings
             spawnOffset = new Vector2(
                 data.Float("offsetX", 0f),
                 data.Float("offsetY", 0f)
@@ -79,8 +84,21 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 data.Float("speedY", 0f)
             );
 
-            bounceBack = data.Bool("bounceBack", false);
             removeOriginal = data.Bool("removeOriginal", false);
+
+            // Original theo crystal modification settings
+            originalOffset = new Vector2(
+                data.Float("originalOffsetX", 0f),
+                data.Float("originalOffsetY", 0f)
+            );
+
+            originalSpeed = new Vector2(
+                data.Float("originalSpeedX", 0f),
+                data.Float("originalSpeedY", 0f)
+            );
+
+            bounceBack = data.Bool("bounceBack", false);
+            bounceBackUseDirection = data.Bool("bounceBackUseDirection", true);
 
             Add(new PlayerCollider(OnPlayer));
 
@@ -276,31 +294,14 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 // Add to scene 
                 Scene.Add(clone);
 
-                // Apply initial speed if specified
+                // Apply initial speed to clone if specified
                 if (initialSpeed != Vector2.Zero)
                 {
                     clone.Speed = initialSpeed;
                 }
 
-                // Bounce original crystal if requested
-                if (bounceBack)
-                {
-                    Vector2 currentSpeed = theo.Speed;
-                    if (currentSpeed != Vector2.Zero)
-                    {
-                        theo.Speed = -currentSpeed;
-                    }
-                    else
-                    {
-                        // If no speed, bounce in a sensible direction based on zone
-                        Vector2 direction = theo.Position - (Position + Collider.Center);
-                        if (direction != Vector2.Zero)
-                        {
-                            direction.Normalize();
-                            theo.Speed = direction * 100f; // Give a small bounce
-                        }
-                    }
-                }
+                // Now modify the original theo crystal
+                ModifyOriginalTheoCrystal(theo);
 
                 // Record that the original crystal has duplicated
                 // This increments its generation and resets the duplication timer
@@ -317,7 +318,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
 
                 // Flash effect
                 flashing = true;
-                flash = 1f;
+                flash = 0.3f;
             }
             catch (Exception ex)
             {
@@ -326,7 +327,63 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                 
                 // Flash to indicate failure
                 flashing = true;
-                flash = 1f;
+                flash = 0.03f;
+            }
+        }
+
+        private void ModifyOriginalTheoCrystal(DuplicatingTheoCrystal theo)
+        {
+            // Apply position offset to original
+            if (originalOffset != Vector2.Zero)
+            {
+                theo.Position += originalOffset;
+            }
+
+            // Apply speed to original
+            if (originalSpeed != Vector2.Zero)
+            {
+                theo.Speed = originalSpeed;
+            }
+            else if (bounceBack)
+            {
+                // Bounce back logic
+                if (bounceBackUseDirection)
+                {
+                    // Bounce in direction away from zone center
+                    Vector2 zoneCenter = Position + new Vector2(Width * 0.5f, Height * 0.5f);
+                    Vector2 direction = theo.Position - zoneCenter;
+                    
+                    if (direction != Vector2.Zero)
+                    {
+                        direction.Normalize();
+                        // Use existing speed magnitude if available, otherwise use a default
+                        float speedMagnitude = theo.Speed.Length();
+                        if (speedMagnitude < 10f) // If speed is too low, use a minimum
+                        {
+                            speedMagnitude = 100f;
+                        }
+                        theo.Speed = direction * speedMagnitude;
+                    }
+                    else
+                    {
+                        // Fallback: bounce upward if crystal is exactly at zone center
+                        theo.Speed = new Vector2(0, -100f);
+                    }
+                }
+                else
+                {
+                    // Simple bounce back: reverse current velocity
+                    Vector2 currentSpeed = theo.Speed;
+                    if (currentSpeed != Vector2.Zero)
+                    {
+                        theo.Speed = -currentSpeed;
+                    }
+                    else
+                    {
+                        // If no speed, give it a default upward bounce
+                        theo.Speed = new Vector2(0, -100f);
+                    }
+                }
             }
         }
 
@@ -335,12 +392,12 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             Draw.Rect(Collider, baseColor * 0.25f);
             Draw.HollowRect(Collider, Color.LightBlue);
             foreach (ParticleData p in particles) {
-                myParticle.Draw(Position + p.Position, Vector2.One * 0.5f, particleColor);
+                myParticle.Draw(Position + p.Position, Vector2.One * 0.3f, particleColor);
             }
 
             if (flashing)
             {
-                Draw.Rect(Collider, Color.Lerp(Color.White, baseColor, flash) * 0.5f);
+                Draw.Rect(Collider, Color.Lerp(Color.White, baseColor, flash) * 0.3f);
             }
         }
 
@@ -348,7 +405,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         {
             // Visual feedback when player enters
             flashing = true;
-            flash = 1f;
+            flash = 0.02f;
         }
     }
 }
