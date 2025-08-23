@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System.Linq;
+
 
 namespace Celeste.Mod.MaxAlHelper.Entities
 {
@@ -89,10 +92,10 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             yield return 0.1f;
             player.ForceStrongWindHair.X = 0f;
             SpotlightWipe.FocusPoint = player.Position - offset + starter.targetRoomTransition;
-            
+
             // Create the wipe dynamically based on the selected type - IMPROVED VERSION
             ScreenWipe wipe = CreateWipe(starter.wipeType, level);
-            
+
             // Set the wipe directly on the level's Wipe property for one-time use
             level.Wipe = wipe;
         }
@@ -101,7 +104,8 @@ namespace Celeste.Mod.MaxAlHelper.Entities
         {
             if (string.IsNullOrEmpty(wipeTypeName))
             {
-                return new SpotlightWipe(level, false, () => {
+                return new SpotlightWipe(level, false, () =>
+                {
                     Thread.Sleep(100);
                     EndCutscene(level);
                 });
@@ -154,7 +158,8 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             {
                 try
                 {
-                    return (ScreenWipe)Activator.CreateInstance(wipeType, level, false, new Action(() => {
+                    return (ScreenWipe)Activator.CreateInstance(wipeType, level, false, new Action(() =>
+                    {
                         Thread.Sleep(100);
                         EndCutscene(level);
                     }));
@@ -166,40 +171,72 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             }
 
             // Final fallback
-            return new SpotlightWipe(level, false, () => {
+            return new SpotlightWipe(level, false, () =>
+            {
                 Thread.Sleep(100);
                 EndCutscene(level);
             });
         }
 
 
+        // Code coming from Snip from an as-of-yet unreleased mod! Check the mod out when it comes
+        internal List<(Follower, Vector2)> StoreFollowers(Player currentPlayer)
+        {
+            List<(Follower, Vector2)> followersAndOffsets
+                = currentPlayer.Leader.Followers.Select(follower => (follower, follower.Entity.Position - Position)).ToList();
+
+            foreach ((Follower follower, _) in followersAndOffsets)
+            {
+                currentPlayer.Leader.Followers.Remove(follower);
+                follower.Leader = null;
+                follower.Entity.AddTag(Tags.Global);
+            }
+
+            return followersAndOffsets;
+        }
+
+        internal void RestoreFollowers(List<(Follower, Vector2)> followersAndOffsets, Player currentPlayer)
+        {
+            currentPlayer.Leader.PastPoints.Clear();
+            foreach ((Follower follower, Vector2 offset) in followersAndOffsets)
+            {
+                currentPlayer.Leader.GainFollower(follower);
+                follower.Entity.Position = Position + offset;
+                follower.Entity.RemoveTag(Tags.Global);
+            }
+        }
+
         public override void OnEnd(Level level)
         {
             level.OnEndOfFrame += delegate
             {
+                var followers = StoreFollowers(player);
+
                 if (!string.IsNullOrEmpty(starter.setFlag))
                 {
                     level.Session.SetFlag(starter.setFlag);
                 }
+
                 if (WasSkipped)
                 {
                     level.Remove(player);
                     level.UnloadLevel();
-                    Audio.SetMusic(null);
+
                     level.Session.Level = starter.targetRoom;
                     level.Session.FirstLevel = false;
                     level.Session.RespawnPoint = GetSpawnPoint(level, starter.targetRoom, starter.targetSpawnId);
+
                     level.LoadLevel(Player.IntroTypes.None);
                     level.Wipe.Cancel();
                 }
                 else
                 {
-                    level.Remove(player);
                     level.EndCutscene();
                     level.UnloadLevel();
                     level.Session.Level = starter.targetRoom;
                     level.Session.FirstLevel = false;
                     level.Session.RespawnPoint = GetSpawnPoint(level, starter.targetRoom, starter.targetSpawnId);
+
                     if (starter.introType == "Fall") level.LoadLevel(Player.IntroTypes.Fall);
                     else if (starter.introType == "Transition") level.LoadLevel(Player.IntroTypes.Transition);
                     else if (starter.introType == "Respawn") level.LoadLevel(Player.IntroTypes.Respawn);
@@ -210,16 +247,22 @@ namespace Celeste.Mod.MaxAlHelper.Entities
                     else if (starter.introType == "ThinkForABit") level.LoadLevel(Player.IntroTypes.ThinkForABit);
                     else if (starter.introType == "TempleMirrorVoid") level.LoadLevel(Player.IntroTypes.TempleMirrorVoid);
                     else level.LoadLevel(Player.IntroTypes.None);
+
                     Audio.SetMusic(null);
                     level.Camera.Y -= 8f;
-                    if (!WasSkipped && level.Wipe != null)
+                    if (level.Wipe != null)
                     {
                         level.Wipe.Cancel();
                     }
                 }
+
+                Player newPlayer = level.Tracker.GetEntity<Player>();
+                if (newPlayer != null && followers.Count > 0)
+                {
+                    RestoreFollowers(followers, newPlayer);
+                }
             };
         }
-
         private Vector2 GetSpawnPoint(Level level, string targetRoom, string spawnId)
         {
             // Get the target room's data first
@@ -257,7 +300,7 @@ namespace Celeste.Mod.MaxAlHelper.Entities
             {
                 return levelData.Spawns[0];
             }
-            
+
             // Ultimate fallback - safe position in target room
             return new Vector2(levelData.Bounds.Left + 8, levelData.Bounds.Top + 8);
         }
